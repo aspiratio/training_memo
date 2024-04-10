@@ -9,6 +9,8 @@ Flask==3.0.3
 functions-framework==3.5.0
 google-api-core==2.18.0
 google-auth==2.29.0
+google-cloud-core==2.4.1
+google-cloud-firestore==2.16.0
 google-cloud-functions==1.16.3
 googleapis-common-protos==1.63.0
 grpc-google-iam-v1==0.13.0
@@ -24,6 +26,7 @@ proto-plus==1.23.0
 protobuf==4.25.3
 pyasn1==0.6.0
 pyasn1_modules==0.4.0
+python-dotenv==1.0.1
 requests==2.31.0
 rsa==4.9
 urllib3==2.2.1
