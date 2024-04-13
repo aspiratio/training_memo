@@ -33,7 +33,6 @@ def main(request):
     # パスパラメータごとに処理を分ける
     if request_path == "/daily_record":
         try:
-            # トレーニング記録を登録する処理
             add_daily_record(request_body)
         except Exception as e:
             logger.error(e)
@@ -53,8 +52,21 @@ def main(request):
 
 
 def add_daily_record(request_body: dict):
-    # Firestoreから歩数の menu_id を持つドキュメントを取得する
-    menu_docs = list(get_documents("menu", "name", request_body["menu"]))
+    """
+    歩数の記録を追加する
+
+    Parameters:
+    - request_body (dict): リクエストボディ
+        - menu (str): トレーニングメニュー
+        - count (int): トレーニング回数や分数
+
+    Raises:
+    - Exception: メニューが登録されていない場合
+    - Exception: 複数のメニューが登録されている場合
+    """
+    menu_docs = list(
+        get_documents("menu", "name", request_body["menu"])
+    )  # Firestoreから歩数の menu_id を持つドキュメントを取得する
     if len(menu_docs) == 0:
         raise Exception("menu が登録されていません")
     elif len(menu_docs) > 1:
@@ -73,12 +85,33 @@ def add_daily_record(request_body: dict):
 
 # Firestoreへのリクエスト
 def get_documents(collection_name: str, field: str, value):
+    """
+    Firestoreからドキュメントを取得する
+
+    Parameters:
+    - collection_name (str): コレクション名
+    - field (str): 検索に使うフィールド名
+    - value: 検索する値
+
+    Returns:
+    - docs: 取得したドキュメント
+    """
     collection_ref = root_doc.collection(collection_name)
     docs = collection_ref.where(filter=FieldFilter(field, "==", value)).stream()
     return docs
 
 
 def add_document(collection_name: str, data: dict):
+    """
+    Firestoreにドキュメントを追加する
+
+    Parameters:
+    - collection_name (str): コレクション名
+    - data (dict): 追加するデータ
+
+    Returns:
+    - doc_ref: 追加したドキュメントの参照
+    """
     collection_ref = root_doc.collection(collection_name)
     update_time, doc_ref = collection_ref.add(data)
     logger.info(f"{collection_name}にデータを登録しました")
