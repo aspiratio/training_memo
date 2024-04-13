@@ -25,7 +25,42 @@ db = firestore.Client()
 root_doc = db.collection(root_collection_name).document(root_doc_id)
 
 
-def get_documents(collection_name: str, field: str, value) -> list:
+def main(request):
+    # クエリパラメータのチェック
+    if request.args.get("walk") is None:
+        logger.info("歩数情報がありません")
+        return {"status": 500}
+    else:
+
+        walk_count = int(request.args.get("walk"))
+        add_daily_walk_count(walk_count)
+        return {"status": 200}
+
+
+def add_daily_walk_count(walk_count: int):
+    # Firestoreから歩数の menu_id を持つドキュメントを取得する
+    menu_docs = list(get_documents("menu", "name", "歩数"))
+    if len(menu_docs) == 0:
+        logger.error("menu に歩数が登録されていません")
+        return "menu is not found"
+    elif len(menu_docs) > 1:
+        logger.error("menu に複数の歩数が登録されています")
+        return "menu is not found"
+
+    menu_doc = menu_docs[0]
+    menu_id = menu_doc.id
+    data = {
+        "count": walk_count,
+        "menu_id": menu_id,
+        "created_at": firestore.SERVER_TIMESTAMP,
+        "updated_at": firestore.SERVER_TIMESTAMP,
+    }
+
+    add_document("daily_record", data)
+
+
+# Firestoreへのリクエスト
+def get_documents(collection_name: str, field: str, value):
     collection_ref = root_doc.collection(collection_name)
     docs = collection_ref.where(filter=FieldFilter(field, "==", value)).stream()
     return docs
@@ -36,32 +71,3 @@ def add_document(collection_name: str, data: dict):
     update_time, doc_ref = collection_ref.add(data)
     logger.info(f"{collection_name}にデータを登録しました")
     return doc_ref
-
-
-def main(request):
-    # クエリパラメータのチェック
-    if request.args.get("walk") is None:
-        logger.info("歩数情報がありません")
-    else:
-        # Firestoreから歩数の menu_id を持つドキュメントを取得する
-        menu_docs = list(get_documents("menu", "name", "歩数"))
-        if len(menu_docs) == 0:
-            logger.error("menu に歩数が登録されていません")
-            return "menu is not found"
-        elif len(menu_docs) > 1:
-            logger.error("menu に複数の歩数が登録されています")
-            return "menu is not found"
-
-        menu_doc = menu_docs[0]
-        menu_id = menu_doc.id
-        walk_count = int(request.args.get("walk"))
-
-        data = {
-            "count": walk_count,
-            "menu_id": menu_id,
-            "created_at": firestore.SERVER_TIMESTAMP,
-            "updated_at": firestore.SERVER_TIMESTAMP,
-        }
-
-        add_document("daily_record", data)
-        return {"status": 200}
