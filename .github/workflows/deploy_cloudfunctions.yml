@@ -18,7 +18,7 @@ jobs:
       - id: "auth"
         uses: "google-github-actions/auth@v2"
         with:
-          workload_identity_provider: projects/466155598212/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-provider
+          workload_identity_provider: "projects/466155598212/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-provider"
           service_account: "github-actions@earnest-math-313901.iam.gserviceaccount.com"
 
       - id: "deploy"
