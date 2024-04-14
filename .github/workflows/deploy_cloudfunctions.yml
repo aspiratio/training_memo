@@ -24,7 +24,7 @@ jobs:
       - id: "deploy"
         uses: "google-github-actions/deploy-cloud-functions@v2"
         with:
-          name: "training_memo"
+          name: "main"
           runtime: "python312"
           env_vars: FIRESTORE_ROOT_COLLECTION=training_memo, FIRESTORE_ROOT_DOCUMENT=v1
           source_dir: "cloud_functions"
