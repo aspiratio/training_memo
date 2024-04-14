@@ -31,3 +31,4 @@ jobs:
           source_dir: "cloud_functions"
           timeout: 120
           max_instances: 10
+          region: "asia-northeast1"
