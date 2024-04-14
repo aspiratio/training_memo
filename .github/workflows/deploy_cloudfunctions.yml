@@ -18,8 +18,8 @@ jobs:
       - id: "auth"
         uses: "google-github-actions/auth@v2"
         with:
-          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER_ID }}
-          service_account: "github-actions@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com"
+          workload_identity_provider: projects/466155598212/locations/global/workloadIdentityPools/github-actions-pool/providers/github-actions-provider
+          service_account: "github-actions@earnest-math-313901.iam.gserviceaccount.com"
 
       - id: "deploy"
         uses: "google-github-actions/deploy-cloud-functions@v2"
