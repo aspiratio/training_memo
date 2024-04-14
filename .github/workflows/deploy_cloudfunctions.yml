@@ -27,4 +27,4 @@ jobs:
           name: "training_memo"
           runtime: "python312"
           env_vars: FIRESTORE_ROOT_COLLECTION=training_memo, FIRESTORE_ROOT_DOCUMENT=v1
-          source: "cloud_functions/main.py"
+          source_dir: "cloud_functions"
