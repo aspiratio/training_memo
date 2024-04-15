@@ -24,11 +24,11 @@ jobs:
       - id: "deploy"
         uses: "google-github-actions/deploy-cloud-functions@v2"
         with:
-          name: "training_memo"
-          entry_point: "main"
-          runtime: "python312"
-          env_vars: FIRESTORE_ROOT_COLLECTION=training_memo, FIRESTORE_ROOT_DOCUMENT=v1
-          source_dir: "cloud_functions"
-          timeout: 120
-          max_instances: 10
-          region: "asia-northeast1"
+          name: "training_memo" # 関数名
+          entry_point: "main" # エントリポイント
+          runtime: "python312" # 関数に使うランタイム
+          env_vars: FIRESTORE_ROOT_COLLECTION=training_memo, FIRESTORE_ROOT_DOCUMENT=v1 # 環境変数
+          source_dir: "cloud_functions" # ルートディレクトリに main.py が無い時はこれでディレクトリを指定する
+          timeout: 120 # 関数のタイムアウト時間
+          max_instances: 10 # 最大インスタンス数
+          region: "asia-northeast1" # リージョン
