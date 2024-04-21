@@ -1,0 +1,45 @@
+name: Deploy API Gateway
+
+on:
+  # main ブランチへのプッシュ時、または手動でワークフローを実行する
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "api_gateway/**"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "api_gateway/**"
+
+jobs:
+  job_id:
+    runs-on: "ubuntu-latest"
+    permissions:
+      contents: "read"
+      id-token: "write"
+
+    steps:
+      - uses: "actions/checkout@v4"
+
+      - id: "auth"
+        uses: "google-github-actions/auth@v2"
+        with:
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER_ID}}
+          service_account: "github-actions@${{ secrets.GCP_PROJECT_ID }}.iam.gserviceaccount.com"
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Create API Gateway configuration
+        run: |
+          # 重複しないようにタイムスタンプ付きのファイル名にする
+          NEW_CONFIG_ID="training-memo-config-$(date +"%Y%m%d%H%M%S")"
+          gcloud api-gateway api-configs create $NEW_CONFIG_ID --api=training-memo-api --openapi-spec=api_gateway/openapi.yaml
+
+      - name: Deploy to API Gateway
+        run: |
+          # ゲートウェイに最新の構成ファイルを設定する
+          gcloud api-gateway gateways update training-memo-gateway --api-config=$NEW_CONFIG_ID --api=training-memo-api --location=asia-northeast1
