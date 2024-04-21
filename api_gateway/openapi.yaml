@@ -1,0 +1,72 @@
+swagger: "2.0"
+info:
+  title: training-memo-api
+  description: "API used for personal training record"
+  version: "1.0.0"
+schemes:
+  - "https"
+produces:
+  - application/json
+x-google-backend:
+  address: https://asia-northeast1-earnest-math-313901.cloudfunctions.net/training_memo
+paths:
+  "/daily_record":
+    post:
+      description: Create new daily records
+      operationId: daily_record
+      parameters:
+        - in: body
+          name: request_body
+          required: true
+          schema:
+            $ref: "#/definitions/daily_record"
+      responses:
+        "200":
+          description: A successful response
+          schema:
+            $ref: "#/definitions/success_response"
+        "400":
+          description: The request body invalid or missing.
+  "/menu":
+    post:
+      description: Create or update training menu
+      operationId: menu
+      parameters:
+        - in: body
+          name: request_body
+          required: true
+          schema:
+            $ref: "#/definitions/menu"
+      responses:
+        "200":
+          description: A successful response
+          schema:
+            $ref: "#/definitions/success_response"
+        "400":
+          description: The request body invalid or missing.
+definitions:
+  success_response:
+    type: object
+    properties:
+      status:
+        type: integer
+        example: 200
+  daily_record:
+    type: object
+    properties:
+      menu:
+        type: string
+      count:
+        type: integer
+    required:
+      - menu
+      - count
+  menu:
+    type: object
+    properties:
+      name:
+        type: string
+      unit:
+        type: string
+      weekly_quota:
+        type: integer
