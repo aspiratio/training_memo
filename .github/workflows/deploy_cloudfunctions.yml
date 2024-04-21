@@ -7,11 +7,6 @@ on:
       - main
     paths:
       - "cloud_functions/**"
-  pull_request:
-    branches:
-      - main
-    paths:
-      - "cloud_functions/**"
 
 jobs:
   job_id:

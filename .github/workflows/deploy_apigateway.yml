@@ -8,11 +8,6 @@ on:
       - main
     paths:
       - "api_gateway/**"
-  pull_request:
-    branches:
-      - main
-    paths:
-      - "api_gateway/**"
 
 jobs:
   job_id:
