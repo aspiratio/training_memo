@@ -1,4 +1,5 @@
 import os
+from datetime import datetime, timedelta, timezone
 from logging import DEBUG, Formatter, StreamHandler, getLogger
 from google.cloud import firestore
 from google.cloud.firestore_v1.base_query import FieldFilter
@@ -31,7 +32,6 @@ def main(request):
     # リクエスト情報を取得する
     request_path = request.path
     request_body = request.json
-    print(request_body)
 
     # パスパラメータごとに処理を分ける
     if request_path == "/daily_record":
@@ -61,26 +61,37 @@ def add_daily_record(request_body: dict):
     - request_body (dict): リクエストボディ
         - menu (str): トレーニングメニュー
         - count (int): トレーニング回数や分数
+        - date (date, optional): トレーニングした日付 (yyyy/mm/dd)
 
     Raises:
     - Exception: メニューが登録されていない場合
     - Exception: 複数のメニューが登録されている場合
     """
     menu_docs = list(get_documents("menu", "name", request_body["menu"]))
+
     if len(menu_docs) == 0:
         raise Exception("menu が登録されていません")
     elif len(menu_docs) > 1:
         raise Exception("menu が複数登録されています")
 
     menu_id = menu_docs[0].id
+    request_date = request_body.get("date")
+
+    # タイムゾーンの生成
+    JST = timezone(timedelta(hours=+9), "JST")
+
+    created_at = (
+        datetime.now(JST)
+        if request_date is None
+        else datetime.strptime(request_date, "%Y/%m/%d")
+    )
+
     data = {
         "count": request_body["count"],
         "menu_id": menu_id,
-        "created_at": firestore.SERVER_TIMESTAMP,
+        "created_at": created_at,
         "updated_at": firestore.SERVER_TIMESTAMP,
     }
-
-    set_document("daily_record", data)
 
 
 def set_training_menu(request_body: dict):
@@ -101,6 +112,7 @@ def set_training_menu(request_body: dict):
         raise Exception("menu が複数登録されています")
 
     menu_id = menu_docs[0].id
+    print(menu_docs[0])
     data = {
         "name": request_body["name"],
         "unit": request_body["unit"],
