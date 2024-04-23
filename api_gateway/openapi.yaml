@@ -58,6 +58,8 @@ definitions:
         type: string
       count:
         type: integer
+      date:
+        type: string
     required:
       - menu
       - count
