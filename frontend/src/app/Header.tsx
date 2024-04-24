@@ -13,16 +13,16 @@ const Header = () => {
           Top
         </Link>
         <Link
-          href="/record"
-          className={pathname === "/record" ? locationColor : undefined}
-        >
-          Record
-        </Link>
-        <Link
           href="/menu"
           className={pathname === "/menu" ? locationColor : undefined}
         >
           Menu
+        </Link>
+        <Link
+          href="/record"
+          className={pathname === "/record" ? locationColor : undefined}
+        >
+          Record
         </Link>
       </nav>
     </header>
