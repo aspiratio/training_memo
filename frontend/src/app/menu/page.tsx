@@ -1,14 +1,22 @@
 "use client"
 import Input from "@/components/Input"
 import PrimaryButton from "@/components/PrimaryButton"
-import { ChangeEvent, useState } from "react"
+import { Dispatch, SetStateAction, useState } from "react"
+import { onChangeEvent, onSubmitEvent } from "@/types/global"
 
 const Menu = () => {
   const [menu, setMenu] = useState<string>("")
   const [quota, setQuota] = useState<string>("")
   const [unit, setUnit] = useState<string>("")
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleChange = (
+    e: onChangeEvent,
+    setState: Dispatch<SetStateAction<any>>
+  ) => {
+    setState(e.target.value)
+  }
+
+  const handleSubmit = (e: onSubmitEvent) => {
     e.preventDefault()
     // フォームの値を送信する関数を実行
     console.log(menu, quota, unit)
@@ -20,25 +28,18 @@ const Menu = () => {
         <Input
           className="w-2/6"
           placeholder="メニュー"
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setMenu(e.target.value)
-          }
+          onChange={(e) => handleChange(e, setMenu)}
         />
         <Input
           className="w-2/6"
           placeholder="数値"
           type="number"
-          onChange={(e: ChangeEvent<HTMLInputElement>) => {
-            console.log(quota)
-            setQuota(e.target.value)
-          }}
+          onChange={(e) => handleChange(e, setQuota)}
         />
         <Input
           className="w-2/6"
           placeholder="単位"
-          onChange={(e: ChangeEvent<HTMLInputElement>) =>
-            setUnit(e.target.value)
-          }
+          onChange={(e) => handleChange(e, setUnit)}
         />
         <PrimaryButton type="submit">Save</PrimaryButton>
       </form>
