@@ -5,6 +5,7 @@ type Props = {
   type?: string
   placeholder?: string
   defaultValue?: string | number
+  required?: boolean
   onChange: (e: ChangeEvent<HTMLInputElement>) => void
 }
 
@@ -13,6 +14,7 @@ const Input = ({
   type,
   placeholder,
   defaultValue,
+  required,
   onChange,
 }: Props) => {
   return (
@@ -22,6 +24,7 @@ const Input = ({
       placeholder={placeholder}
       defaultValue={defaultValue}
       onChange={onChange}
+      required={required}
     />
   )
 }

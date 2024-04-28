@@ -27,17 +27,20 @@ const CreateForm = () => {
       <Input
         className="w-2/6"
         placeholder="メニュー"
+        required={true}
         onChange={(e) => handleChange(e, setMenu)}
       />
       <Input
         className="w-1/6"
         placeholder="数値"
+        required={true}
         type="number"
         onChange={(e) => handleChange(e, setQuota)}
       />
       <Input
         className="w-1/6"
         placeholder="単位"
+        required={true}
         onChange={(e) => handleChange(e, setUnit)}
       />
       <PrimaryButton type="submit">Save</PrimaryButton>
