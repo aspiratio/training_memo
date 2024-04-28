@@ -6,7 +6,8 @@ type Props = {
   placeholder?: string
   defaultValue?: string | number
   required?: boolean
-  onChange: (e: ChangeEvent<HTMLInputElement>) => void
+  readOnly?: boolean
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void
 }
 
 const Input = ({
@@ -15,16 +16,20 @@ const Input = ({
   placeholder,
   defaultValue,
   required,
+  readOnly,
   onChange,
 }: Props) => {
   return (
     <input
-      className={`rounded-md px-2 py-2 ${className} text-black`}
+      className={`rounded-md px-2 py-2 text-black ${
+        readOnly && "bg-slate-300"
+      } ${className}`}
       type={type}
       placeholder={placeholder}
       defaultValue={defaultValue}
       onChange={onChange}
       required={required}
+      readOnly={readOnly}
     />
   )
 }
