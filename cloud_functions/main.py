@@ -93,6 +93,8 @@ def add_daily_record(request_body: dict):
         "updated_at": firestore.SERVER_TIMESTAMP,
     }
 
+    set_document("daily_record", data)
+
 
 def set_training_menu(request_body: dict):
     """
