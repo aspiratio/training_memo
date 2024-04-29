@@ -146,12 +146,7 @@ def set_training_menu(request_body: dict):
     Raises:
     - Exception: 複数のメニューが登録されている場合
     """
-    menu_docs = list(get_documents("menu", "name", request_body["name"]))
-    if len(menu_docs) > 1:
-        raise Exception("menu が複数登録されています")
 
-    menu_id = menu_docs[0].id
-    print(menu_docs[0])
     data = {
         "name": request_body["name"],
         "unit": request_body["unit"],
@@ -160,7 +155,18 @@ def set_training_menu(request_body: dict):
         "updated_at": firestore.SERVER_TIMESTAMP,
     }
 
-    set_document("menu", data, menu_id)
+    menu_docs = list(get_documents("menu", "name", request_body["name"]))
+    if len(menu_docs) > 1:
+        raise Exception("menu が複数登録されています")
+
+    print(menu_docs)
+    if len(menu_docs) == 0:
+        set_document("menu", data)
+    else:  # created_atだけ従来の値を残して上書きする
+        menu_id = menu_docs[0].id
+        old_data = docs_to_json(menu_docs)[0]
+        data["created_at"] = old_data["created_at"]
+        set_document("menu", data, menu_id)
 
 
 # Firestoreへのリクエスト
