@@ -11,9 +11,19 @@ x-google-backend:
   address: https://asia-northeast1-earnest-math-313901.cloudfunctions.net/training_memo
 paths:
   "/daily_record":
+    get:
+      description: Get daily records
+      operationId: get_daily_record
+      responses:
+        "200":
+          description: A success_response
+          schema:
+            $ref: "#/definitions/get_success_response"
+        "400":
+          description: The request body invalid or missing.
     post:
       description: Create new daily records
-      operationId: daily_record
+      operationId: post_daily_record
       parameters:
         - in: body
           name: request_body
@@ -24,10 +34,20 @@ paths:
         "200":
           description: A successful response
           schema:
-            $ref: "#/definitions/success_response"
+            $ref: "#/definitions/post_success_response"
         "400":
           description: The request body invalid or missing.
   "/menu":
+    get:
+      description: Get menu
+      operationId: get_menu
+      responses:
+        "200":
+          description: A success_response
+          schema:
+            $ref: "#/definitions/get_success_response"
+        "400":
+          description: The request body invalid or missing.
     post:
       description: Create or update training menu
       operationId: menu
@@ -41,11 +61,19 @@ paths:
         "200":
           description: A successful response
           schema:
-            $ref: "#/definitions/success_response"
+            $ref: "#/definitions/post_success_response"
         "400":
           description: The request body invalid or missing.
 definitions:
-  success_response:
+  get_success_response:
+    type: object
+    properties:
+      status:
+        type: integer
+        example: 200
+      data:
+        type: array
+  post_success_response:
     type: object
     properties:
       status:
