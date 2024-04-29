@@ -1,6 +1,8 @@
 import os
+import json
 from datetime import datetime, timedelta, timezone
 from logging import DEBUG, Formatter, StreamHandler, getLogger
+from urllib import response
 from google.cloud import firestore
 from google.cloud.firestore_v1.base_query import FieldFilter
 from dotenv import load_dotenv
@@ -29,6 +31,41 @@ root_doc = db.collection(root_collection_name).document(root_doc_id)
 
 
 def main(request):
+    if request.method == "GET":
+        message = handle_get(request)
+    elif request.method == "POST":
+        message = handle_post(request)
+
+    return message
+
+
+def handle_get(request):
+    # リクエスト情報を取得する
+    request_path = request.path
+
+    # パスパラメータごとに処理を分ける
+    if request_path == "/daily_record":
+        try:
+            docs = get_documents("daily_record")
+            response = docs_to_json(docs)
+        except Exception as e:
+            logger.error(e, exc_info=True)
+            return {"status": 500, "message": "取得に失敗しました"}
+    elif request_path == "/menu":
+        try:
+            docs = get_documents("menu")
+            response = docs_to_json(docs)
+        except Exception as e:
+            logger.error(e, exc_info=True)
+            return {"status": 500, "message": "取得に失敗しました"}
+    else:
+        logger.info("無効なパスパラメータでリクエストされました")
+        return {"status": 404}
+
+    return {"status": 200, "data": response}
+
+
+def handle_post(request):
     # リクエスト情報を取得する
     request_path = request.path
     request_body = request.json
@@ -93,6 +130,8 @@ def add_daily_record(request_body: dict):
         "updated_at": firestore.SERVER_TIMESTAMP,
     }
 
+    set_document("daily_record", data)
+
 
 def set_training_menu(request_body: dict):
     """
@@ -107,12 +146,7 @@ def set_training_menu(request_body: dict):
     Raises:
     - Exception: 複数のメニューが登録されている場合
     """
-    menu_docs = list(get_documents("menu", "name", request_body["name"]))
-    if len(menu_docs) > 1:
-        raise Exception("menu が複数登録されています")
 
-    menu_id = menu_docs[0].id
-    print(menu_docs[0])
     data = {
         "name": request_body["name"],
         "unit": request_body["unit"],
@@ -121,24 +155,39 @@ def set_training_menu(request_body: dict):
         "updated_at": firestore.SERVER_TIMESTAMP,
     }
 
-    set_document("menu", data, menu_id)
+    menu_docs = list(get_documents("menu", "name", request_body["name"]))
+    if len(menu_docs) > 1:
+        raise Exception("menu が複数登録されています")
+
+    print(menu_docs)
+    if len(menu_docs) == 0:
+        set_document("menu", data)
+    else:  # created_atだけ従来の値を残して上書きする
+        menu_id = menu_docs[0].id
+        old_data = docs_to_json(menu_docs)[0]
+        data["created_at"] = old_data["created_at"]
+        set_document("menu", data, menu_id)
 
 
 # Firestoreへのリクエスト
-def get_documents(collection_name: str, field: str, value):
+def get_documents(collection_name: str, field: str = None, value: any = None):
     """
     Firestoreから指定した検索条件に一致するドキュメントを取得する
 
     Parameters:
     - collection_name (str): コレクション名
-    - field (str): 検索に使うフィールド名
-    - value: 検索する値
+    - field (str, optional): 検索に使うフィールド名
+    - value (any, optional): 検索する値
 
     Returns:
     - docs: 取得したドキュメント
     """
+
     collection_ref = root_doc.collection(collection_name)
-    docs = collection_ref.where(filter=FieldFilter(field, "==", value)).stream()
+    if field is None and value is None:
+        docs = collection_ref.stream()
+    else:
+        docs = collection_ref.where(filter=FieldFilter(field, "==", value)).stream()
     return docs
 
 
@@ -149,7 +198,7 @@ def set_document(collection_name: str, data: dict, doc_id: str = ""):
     Parameters:
     - collection_name (str): コレクション名
     - data (dict): 追加するデータ
-    - doc_id (str): 上書きするドキュメントID
+    - doc_id (str, optional): 上書きするドキュメントID
 
     Returns:
     - doc_ref: 追加したドキュメントの参照
@@ -165,3 +214,20 @@ def set_document(collection_name: str, data: dict, doc_id: str = ""):
         )  # 指定されたドキュメントに上書きする
     logger.info(f"{collection_name}にデータを登録しました")
     return doc_ref
+
+
+def docs_to_json(docs):
+    """
+    Firestoreから取得した複数のドキュメントをAPIのレスポンスに変換する
+
+    Parameters:
+    - docs: Firestoreから取得したドキュメント
+
+    Returns:
+    - json_data: APIのレスポンスとして返すJSON形式のデータ
+    """
+    json_data = []
+    for doc in docs:
+        doc_dict = doc.to_dict()
+        json_data.append(doc_dict)
+    return json_data
