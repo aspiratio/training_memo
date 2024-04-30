@@ -14,8 +14,9 @@ type Props = {
 }
 
 const Menu = ({ children }: Props) => {
-  const { menu, unit } = children
-  const [quota, setQuota] = useState<string>("100")
+  const menu = children.name
+  const unit = children.unit
+  const [quota, setQuota] = useState<number>(children.weekly_quota)
   const [isReadOnly, setIsReadOnly] = useState<boolean>(true)
 
   const handleChange = (
@@ -25,7 +26,11 @@ const Menu = ({ children }: Props) => {
     setState(e.target.value)
   }
 
-  const handleSubmit = () => {
+  const deleteMenu = () => {
+    console.log("Firestoreからmenuを削除する処理")
+  }
+
+  const updateMenu = () => {
     // フォームの値を送信する関数を実行
     console.log(menu, quota, unit)
     changeReadOnly()
@@ -40,7 +45,7 @@ const Menu = ({ children }: Props) => {
       <Input className="w-2/6" defaultValue={menu} readOnly={true} />
       <Input
         className="w-1/6"
-        defaultValue={quota}
+        defaultValue={String(quota)}
         readOnly={isReadOnly}
         type="number"
         onChange={(e) => handleChange(e, setQuota)}
@@ -52,13 +57,16 @@ const Menu = ({ children }: Props) => {
             onClick={changeReadOnly}
             className="h-8 w-8 inline text-yellow-100"
           />
-          <TrashIcon className="h-8 w-8 inline text-red-400" />
+          <TrashIcon
+            onClick={deleteMenu}
+            className="h-8 w-8 inline text-red-400"
+          />
         </>
       ) : (
         <>
           <CheckCircleIcon
             onClick={() => {
-              handleSubmit()
+              updateMenu()
             }}
             className="h-8 w-8 inline text-yellow-100"
           />

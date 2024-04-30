@@ -3,8 +3,8 @@ export type onChangeEvent = React.ChangeEvent<HTMLInputElement>
 export type onSubmitEvent = React.FormEvent<HTMLFormElement>
 
 export type TrainingMenu = {
-  menu: string
-  quota: number
+  name: string
+  weekly_quota: number
   unit: string
 }
 
