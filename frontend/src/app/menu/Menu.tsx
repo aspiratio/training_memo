@@ -30,10 +30,27 @@ const Menu = ({ children }: Props) => {
     console.log("Firestoreからmenuを削除する処理")
   }
 
-  const updateMenu = () => {
-    // フォームの値を送信する関数を実行
-    console.log(menu, quota, unit)
-    changeReadOnly()
+  const updateMenu = async () => {
+    // TODO: API側にupdateメソッドを追加したら書き換える
+    const API_URL = process.env.NEXT_PUBLIC_CLOUD_FUNCTIONS_URL
+    console.log(API_URL)
+    try {
+      await fetch(`${API_URL}/menu`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: menu,
+          unit: unit,
+          weekly_quota: quota,
+        }),
+        cache: "no-store",
+      })
+      changeReadOnly()
+    } catch {
+      alert("更新に失敗しました")
+    }
   }
 
   const changeReadOnly = () => {
