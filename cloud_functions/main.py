@@ -35,8 +35,21 @@ def main(request):
         message = handle_get(request)
     elif request.method == "POST":
         message = handle_post(request)
+    elif (
+        request.method == "OPTIONS"
+    ):  # NOTE: 開発時のサーバーを起動するため、CORSの設定を行う。本番環境はAPIGateWay経由でトリガーされるため不要なはず
+        headers = {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Max-Age": "3600",
+        }
 
-    return message
+        return ("", 204, headers)
+    # Set CORS headers for the main request
+    headers = {"Access-Control-Allow-Origin": "*"}
+
+    return (message, headers)
 
 
 def handle_get(request):
