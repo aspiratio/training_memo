@@ -8,6 +8,7 @@ import {
   TrashIcon,
   XCircleIcon,
 } from "@heroicons/react/20/solid"
+import { setTrainingMenuList } from "@/utils/request"
 
 type Props = {
   children: TrainingMenu
@@ -32,21 +33,8 @@ const Menu = ({ children }: Props) => {
 
   const updateMenu = async () => {
     // TODO: API側にupdateメソッドを追加したら書き換える
-    const API_URL = process.env.NEXT_PUBLIC_CLOUD_FUNCTIONS_URL
-    console.log(API_URL)
     try {
-      await fetch(`${API_URL}/menu`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: menu,
-          unit: unit,
-          weekly_quota: quota,
-        }),
-        cache: "no-store",
-      })
+      await setTrainingMenuList(menu, unit, quota)
       changeReadOnly()
     } catch {
       alert("更新に失敗しました")

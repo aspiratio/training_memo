@@ -1,10 +1,9 @@
 import { TrainingMenu } from "@/types/global"
 import Menu from "./Menu"
+import { getTrainingMenuList } from "@/utils/request"
 
 const MenuList = async () => {
-  const API_URL = process.env.NEXT_PUBLIC_CLOUD_FUNCTIONS_URL
-  const res = await fetch(`${API_URL}/menu`, { cache: "no-store" })
-  const trainingMenuList = (await res.json()).data
+  const trainingMenuList = await getTrainingMenuList()
   return (
     <>
       {trainingMenuList.map((menu: TrainingMenu, index: number) => {
