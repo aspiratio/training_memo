@@ -1,9 +1,11 @@
 import { TrainingMenu } from "@/types/global"
 import Menu from "./Menu"
-import { getTrainingMenuList } from "@/utils/request"
 
-const MenuList = async () => {
-  const trainingMenuList = await getTrainingMenuList()
+type Props = {
+  trainingMenuList: Array<TrainingMenu>
+}
+
+const MenuList = ({ trainingMenuList }: Props) => {
   return (
     <>
       {trainingMenuList.map((menu: TrainingMenu, index: number) => {

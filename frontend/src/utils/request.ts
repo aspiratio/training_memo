@@ -8,8 +8,8 @@ export const getTrainingMenuList = async () => {
 
 export const setTrainingMenuList = async (
   menu: string,
-  unit: string,
-  quota: number
+  quota: number,
+  unit: string
 ) => {
   await fetch(`${API_ENDPOINT}/menu`, {
     method: "POST",

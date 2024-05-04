@@ -34,7 +34,7 @@ const Menu = ({ children }: Props) => {
   const updateMenu = async () => {
     // TODO: API側にupdateメソッドを追加したら書き換える
     try {
-      await setTrainingMenuList(menu, unit, quota)
+      await setTrainingMenuList(menu, quota, unit)
       changeReadOnly()
     } catch {
       alert("更新に失敗しました")

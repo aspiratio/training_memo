@@ -5,6 +5,7 @@ type Props = {
   type?: string
   placeholder?: string
   defaultValue?: string | number
+  value?: string | number
   required?: boolean
   readOnly?: boolean
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void
@@ -15,6 +16,7 @@ const Input = ({
   type,
   placeholder,
   defaultValue,
+  value,
   required,
   readOnly,
   onChange,
@@ -27,6 +29,7 @@ const Input = ({
       type={type}
       placeholder={placeholder}
       defaultValue={defaultValue}
+      value={value}
       onChange={onChange}
       required={required}
       readOnly={readOnly}
