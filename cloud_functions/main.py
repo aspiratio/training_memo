@@ -30,11 +30,14 @@ db = firestore.Client()
 root_doc = db.collection(root_collection_name).document(root_doc_id)
 
 
+# TODO: Flaskに書き換える
 def main(request):
     if request.method == "GET":
         message = handle_get(request)
     elif request.method == "POST":
         message = handle_post(request)
+    elif request.method == "DELETE":
+        message = handle_delete(request)
     elif (
         request.method == "OPTIONS"
     ):  # NOTE: 開発時のサーバーを起動するため、CORSの設定を行う。本番環境はAPIGateWay経由でトリガーされるため不要なはず
@@ -99,6 +102,30 @@ def handle_post(request):
     else:
         logger.info("無効なパスパラメータでリクエストされました")
         return {"status": 404}
+
+    return {"status": 200}
+
+
+def handle_delete(request):
+    request_path = request.path
+    purge_request_path = request_path.split(
+        "/"
+    )  # 例 [0]: "/", [1]: "daily_record", [2]: <id>
+
+    # 無効なパスパラメータでリクエストされた場合
+    if len(purge_request_path) != 3 or purge_request_path[1] not in [
+        "daily_record",
+        "menu",
+    ]:
+        logger.info("無効なパスパラメータでリクエストされました")
+        return {"status": 404}
+
+    try:
+        delete_document(purge_request_path[1], purge_request_path[2])
+        print("削除")
+    except Exception as e:
+        logger.error(e, exc_info=True)
+        return {"status": 500, "message": "削除に失敗しました"}
 
     return {"status": 200}
 
@@ -172,7 +199,6 @@ def set_training_menu(request_body: dict):
     if len(menu_docs) > 1:
         raise Exception("menu が複数登録されています")
 
-    print(menu_docs)
     if len(menu_docs) == 0:
         set_document("menu", data)
     else:  # created_atだけ従来の値を残して上書きする
@@ -229,9 +255,21 @@ def set_document(collection_name: str, data: dict, doc_id: str = ""):
     return doc_ref
 
 
+def delete_document(collection_name: str, doc_id: str):
+    """
+    Firestoreからドキュメントを削除する
+
+    Parameters:
+    - collection_name (str): コレクション名
+    - doc_id (str): 削除するドキュメントID
+    """
+    collection_ref = root_doc.collection(collection_name)
+    collection_ref.document(doc_id).delete()
+
+
 def docs_to_json(docs):
     """
-    Firestoreから取得した複数のドキュメントをAPIのレスポンスに変換する
+    Firestoreから取得した複数のドキュメントにidをつけてjsonに変換する
 
     Parameters:
     - docs: Firestoreから取得したドキュメント
@@ -242,5 +280,6 @@ def docs_to_json(docs):
     json_data = []
     for doc in docs:
         doc_dict = doc.to_dict()
+        doc_dict["id"] = doc.id  # ドキュメントIDを辞書に追加
         json_data.append(doc_dict)
     return json_data

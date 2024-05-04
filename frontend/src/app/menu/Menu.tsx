@@ -1,14 +1,14 @@
 "use client"
 import Input from "@/components/commons/Input"
 import { Dispatch, SetStateAction, useState } from "react"
-import { TrainingMenu, onChangeEvent, onSubmitEvent } from "@/types/global"
+import { TrainingMenu, onChangeEvent } from "@/types/global"
 import {
   CheckCircleIcon,
   PencilIcon,
   TrashIcon,
   XCircleIcon,
 } from "@heroicons/react/20/solid"
-import { setTrainingMenuList } from "@/utils/request"
+import { deleteTrainingMenu, setTrainingMenuList } from "@/utils/request"
 
 type Props = {
   children: TrainingMenu
@@ -17,6 +17,7 @@ type Props = {
 const Menu = ({ children }: Props) => {
   const menu = children.name
   const unit = children.unit
+  const id = children.id
   const [quota, setQuota] = useState<number>(children.weekly_quota)
   const [isReadOnly, setIsReadOnly] = useState<boolean>(true)
 
@@ -27,8 +28,12 @@ const Menu = ({ children }: Props) => {
     setState(e.target.value)
   }
 
-  const deleteMenu = () => {
-    console.log("Firestoreからmenuを削除する処理")
+  const deleteMenu = async () => {
+    try {
+      await deleteTrainingMenu(id)
+    } catch {
+      alert("削除に失敗しました")
+    }
   }
 
   const updateMenu = async () => {

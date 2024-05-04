@@ -6,6 +6,7 @@ export type TrainingMenu = {
   name: string
   weekly_quota: number
   unit: string
+  id: string
 }
 
 export type TrainingMenuList = TrainingMenu[]

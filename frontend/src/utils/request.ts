@@ -24,3 +24,9 @@ export const setTrainingMenuList = async (
     cache: "no-store",
   })
 }
+
+export const deleteTrainingMenu = async (id: string) => {
+  await fetch(`${API_ENDPOINT}/menu/${id}`, {
+    method: "DELETE",
+  })
+}
