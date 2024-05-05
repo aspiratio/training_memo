@@ -32,25 +32,21 @@ root_doc = db.collection(root_collection_name).document(root_doc_id)
 
 # TODO: Flaskに書き換える
 def main(request):
+    # NOTE: 開発時のサーバーを起動するため、CORSの設定を行う。本番環境はAPIGateWay経由でトリガーされるため不要なはず
+    headers = {
+        "Access-Control-Allow-Origin": "http://localhost:3000",
+        "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Max-Age": "3600",
+    }
     if request.method == "GET":
         message = handle_get(request)
     elif request.method == "POST":
         message = handle_post(request)
     elif request.method == "DELETE":
         message = handle_delete(request)
-    elif (
-        request.method == "OPTIONS"
-    ):  # NOTE: 開発時のサーバーを起動するため、CORSの設定を行う。本番環境はAPIGateWay経由でトリガーされるため不要なはず
-        headers = {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "GET",
-            "Access-Control-Allow-Headers": "Content-Type",
-            "Access-Control-Max-Age": "3600",
-        }
-
+    elif request.method == "OPTIONS":
         return ("", 204, headers)
-    # Set CORS headers for the main request
-    headers = {"Access-Control-Allow-Origin": "*"}
 
     return (message, headers)
 
