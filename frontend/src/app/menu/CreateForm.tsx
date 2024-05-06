@@ -25,8 +25,13 @@ const CreateForm = ({ addTrainingMenu }: Props) => {
     console.log(menu, quota, unit)
     try {
       e.preventDefault()
-      await setTrainingMenuList(menu, Number(quota), unit) // APIリクエスト
-      addTrainingMenu({ name: menu, weekly_quota: Number(quota), unit: unit }) // stateの更新
+      const id = await setTrainingMenuList(menu, Number(quota), unit) // APIリクエスト
+      addTrainingMenu({
+        name: menu,
+        weekly_quota: Number(quota),
+        unit,
+        id,
+      }) // stateの更新
       setMenu("")
       setQuota("")
       setUnit("")

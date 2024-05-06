@@ -3,13 +3,21 @@ import Menu from "./Menu"
 
 type Props = {
   trainingMenuList: Array<TrainingMenu>
+  onClickDeleteButton: (id: string) => void
 }
 
-const MenuList = ({ trainingMenuList }: Props) => {
+const MenuList = ({ trainingMenuList, onClickDeleteButton }: Props) => {
   return (
     <>
-      {trainingMenuList.map((menu: TrainingMenu, index: number) => {
-        return <Menu key={index}>{menu}</Menu>
+      {trainingMenuList.map((menu: TrainingMenu) => {
+        return (
+          <Menu
+            key={menu.id}
+            onClickDeleteButton={() => onClickDeleteButton(menu.id)}
+          >
+            {menu}
+          </Menu>
+        )
       })}
     </>
   )

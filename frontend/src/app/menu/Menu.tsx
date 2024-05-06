@@ -8,13 +8,14 @@ import {
   TrashIcon,
   XCircleIcon,
 } from "@heroicons/react/20/solid"
-import { deleteTrainingMenu, setTrainingMenuList } from "@/utils/request"
+import { setTrainingMenuList } from "@/utils/request"
 
 type Props = {
   children: TrainingMenu
+  onClickDeleteButton: () => void
 }
 
-const Menu = ({ children }: Props) => {
+const Menu = ({ children, onClickDeleteButton }: Props) => {
   const menu = children.name
   const unit = children.unit
   const id = children.id
@@ -26,14 +27,6 @@ const Menu = ({ children }: Props) => {
     setState: Dispatch<SetStateAction<any>>
   ) => {
     setState(e.target.value)
-  }
-
-  const deleteMenu = async () => {
-    try {
-      await deleteTrainingMenu(id)
-    } catch {
-      alert("削除に失敗しました")
-    }
   }
 
   const updateMenu = async () => {
@@ -68,7 +61,7 @@ const Menu = ({ children }: Props) => {
             className="h-8 w-8 inline text-yellow-100"
           />
           <TrashIcon
-            onClick={deleteMenu}
+            onClick={onClickDeleteButton}
             className="h-8 w-8 inline text-red-400"
           />
         </>

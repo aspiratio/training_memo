@@ -1,5 +1,4 @@
 import os
-import json
 from datetime import datetime, timedelta, timezone
 from logging import DEBUG, Formatter, StreamHandler, getLogger
 from urllib import response
@@ -85,13 +84,13 @@ def handle_post(request):
     # パスパラメータごとに処理を分ける
     if request_path == "/daily_record":
         try:
-            add_daily_record(request_body)
+            doc_id = add_daily_record(request_body)
         except Exception as e:
             logger.error(e, exc_info=True)
             return {"status": 500, "message": "記録に失敗しました"}
     elif request_path == "/menu":
         try:
-            set_training_menu(request_body)
+            doc_id = set_training_menu(request_body)
         except Exception as e:
             logger.error(e, exc_info=True)
             return {"status": 500, "message": "設定に失敗しました"}
@@ -99,7 +98,7 @@ def handle_post(request):
         logger.info("無効なパスパラメータでリクエストされました")
         return {"status": 404}
 
-    return {"status": 200}
+    return {"status": 200, "id": doc_id}
 
 
 def handle_delete(request):
@@ -107,6 +106,7 @@ def handle_delete(request):
     purge_request_path = request_path.split(
         "/"
     )  # 例 [0]: "/", [1]: "daily_record", [2]: <id>
+    print(purge_request_path)
 
     # 無効なパスパラメータでリクエストされた場合
     if len(purge_request_path) != 3 or purge_request_path[1] not in [
@@ -118,7 +118,6 @@ def handle_delete(request):
 
     try:
         delete_document(purge_request_path[1], purge_request_path[2])
-        print("削除")
     except Exception as e:
         logger.error(e, exc_info=True)
         return {"status": 500, "message": "削除に失敗しました"}
@@ -139,6 +138,9 @@ def add_daily_record(request_body: dict):
     Raises:
     - Exception: メニューが登録されていない場合
     - Exception: 複数のメニューが登録されている場合
+
+    Returns:
+    - record_id: 追加したドキュメントのID
     """
     menu_docs = list(get_documents("menu", "name", request_body["menu"]))
 
@@ -166,7 +168,9 @@ def add_daily_record(request_body: dict):
         "updated_at": firestore.SERVER_TIMESTAMP,
     }
 
-    set_document("daily_record", data)
+    record_id = set_document("daily_record", data).id
+
+    return record_id
 
 
 def set_training_menu(request_body: dict):
@@ -181,6 +185,9 @@ def set_training_menu(request_body: dict):
 
     Raises:
     - Exception: 複数のメニューが登録されている場合
+
+    Returns:
+    - menu_id: 追加したドキュメントのID
     """
 
     data = {
@@ -196,12 +203,14 @@ def set_training_menu(request_body: dict):
         raise Exception("menu が複数登録されています")
 
     if len(menu_docs) == 0:
-        set_document("menu", data)
+        menu_id = set_document("menu", data).id
     else:  # created_atだけ従来の値を残して上書きする
         menu_id = menu_docs[0].id
         old_data = docs_to_json(menu_docs)[0]
         data["created_at"] = old_data["created_at"]
         set_document("menu", data, menu_id)
+
+    return menu_id
 
 
 # Firestoreへのリクエスト
@@ -215,7 +224,7 @@ def get_documents(collection_name: str, field: str = None, value: any = None):
     - value (any, optional): 検索する値
 
     Returns:
-    - docs: 取得したドキュメント
+    - docs: 取得したドキュメントの参照リスト
     """
 
     collection_ref = root_doc.collection(collection_name)
@@ -240,14 +249,13 @@ def set_document(collection_name: str, data: dict, doc_id: str = ""):
     """
     collection_ref = root_doc.collection(collection_name)
     if doc_id == "":
-        doc_ref = collection_ref.document().set(
-            data
-        )  # 自動生成したドキュメントIDで登録する
+        doc_ref = collection_ref.document()  # ドキュメントIDを自動生成する
     else:
-        doc_ref = collection_ref.document(doc_id).set(
-            data
-        )  # 指定されたドキュメントに上書きする
+        doc_ref = collection_ref.document(doc_id)
+
+    doc_ref.set(data)
     logger.info(f"{collection_name}にデータを登録しました")
+
     return doc_ref
 
 

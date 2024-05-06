@@ -11,7 +11,7 @@ export const setTrainingMenuList = async (
   quota: number,
   unit: string
 ) => {
-  await fetch(`${API_ENDPOINT}/menu`, {
+  const res = await fetch(`${API_ENDPOINT}/menu`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -23,6 +23,8 @@ export const setTrainingMenuList = async (
     }),
     cache: "no-store",
   })
+  const id = (await res.json()).id
+  return id
 }
 
 export const deleteTrainingMenu = async (id: string) => {
