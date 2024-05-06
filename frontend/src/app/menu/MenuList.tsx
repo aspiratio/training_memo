@@ -1,15 +1,23 @@
-import { TrainingMenuList } from "@/types/global"
+import { TrainingMenu } from "@/types/global"
 import Menu from "./Menu"
 
 type Props = {
-  menuList: TrainingMenuList
+  trainingMenuList: Array<TrainingMenu>
+  onClickDeleteButton: (id: string) => void
 }
 
-const MenuList = ({ menuList }: Props) => {
+const MenuList = ({ trainingMenuList, onClickDeleteButton }: Props) => {
   return (
     <>
-      {menuList.map((menu, index) => {
-        return <Menu key={index}>{menu}</Menu>
+      {trainingMenuList.map((menu: TrainingMenu) => {
+        return (
+          <Menu
+            key={menu.id}
+            onClickDeleteButton={() => onClickDeleteButton(menu.id)}
+          >
+            {menu}
+          </Menu>
+        )
       })}
     </>
   )

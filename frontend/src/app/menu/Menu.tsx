@@ -1,21 +1,25 @@
 "use client"
 import Input from "@/components/commons/Input"
 import { Dispatch, SetStateAction, useState } from "react"
-import { TrainingMenu, onChangeEvent, onSubmitEvent } from "@/types/global"
+import { TrainingMenu, onChangeEvent } from "@/types/global"
 import {
   CheckCircleIcon,
   PencilIcon,
   TrashIcon,
   XCircleIcon,
 } from "@heroicons/react/20/solid"
+import { setTrainingMenuList } from "@/utils/request"
 
 type Props = {
   children: TrainingMenu
+  onClickDeleteButton: () => void
 }
 
-const Menu = ({ children }: Props) => {
-  const { menu, unit } = children
-  const [quota, setQuota] = useState<string>("100")
+const Menu = ({ children, onClickDeleteButton }: Props) => {
+  const menu = children.name
+  const unit = children.unit
+  const id = children.id
+  const [quota, setQuota] = useState<number>(children.weekly_quota)
   const [isReadOnly, setIsReadOnly] = useState<boolean>(true)
 
   const handleChange = (
@@ -25,10 +29,14 @@ const Menu = ({ children }: Props) => {
     setState(e.target.value)
   }
 
-  const handleSubmit = () => {
-    // フォームの値を送信する関数を実行
-    console.log(menu, quota, unit)
-    changeReadOnly()
+  const updateMenu = async () => {
+    // TODO: API側にupdateメソッドを追加したら書き換える
+    try {
+      await setTrainingMenuList(menu, quota, unit)
+      changeReadOnly()
+    } catch {
+      alert("更新に失敗しました")
+    }
   }
 
   const changeReadOnly = () => {
@@ -40,7 +48,7 @@ const Menu = ({ children }: Props) => {
       <Input className="w-2/6" defaultValue={menu} readOnly={true} />
       <Input
         className="w-1/6"
-        defaultValue={quota}
+        defaultValue={String(quota)}
         readOnly={isReadOnly}
         type="number"
         onChange={(e) => handleChange(e, setQuota)}
@@ -52,13 +60,16 @@ const Menu = ({ children }: Props) => {
             onClick={changeReadOnly}
             className="h-8 w-8 inline text-yellow-100"
           />
-          <TrashIcon className="h-8 w-8 inline text-red-400" />
+          <TrashIcon
+            onClick={onClickDeleteButton}
+            className="h-8 w-8 inline text-red-400"
+          />
         </>
       ) : (
         <>
           <CheckCircleIcon
             onClick={() => {
-              handleSubmit()
+              updateMenu()
             }}
             className="h-8 w-8 inline text-yellow-100"
           />

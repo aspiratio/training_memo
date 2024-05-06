@@ -1,26 +1,45 @@
-import { TrainingMenuList } from "@/types/global"
+"use client"
+import { TrainingMenu } from "@/types/global"
 import CreateForm from "./CreateForm"
 import MenuList from "./MenuList"
+import { useEffect, useState } from "react"
+import { getTrainingMenuList, deleteTrainingMenu } from "@/utils/request"
 
-const Menu = () => {
-  const trainingMenuList: TrainingMenuList = [
-    {
-      menu: "腕立て伏せ",
-      quota: 70,
-      unit: "回",
-    },
-    {
-      menu: "プランク",
-      quota: 7,
-      unit: "分",
-    },
-  ]
+const MenuPage = () => {
+  const [trainingMenuList, setTrainingMenuList] = useState<Array<TrainingMenu>>(
+    []
+  )
+  const addTrainingMenu = (trainingMenu: TrainingMenu) => {
+    setTrainingMenuList([...trainingMenuList, trainingMenu])
+  }
+  const onClickDeleteButton = async (id: string) => {
+    try {
+      await deleteTrainingMenu(id)
+      setTrainingMenuList(trainingMenuList.filter((menu) => menu.id !== id))
+    } catch {
+      alert("削除に失敗しました")
+    }
+  }
+
+  useEffect(() => {
+    const getData = async () => {
+      const response = await getTrainingMenuList()
+      setTrainingMenuList(response)
+    }
+    getData()
+  }, [])
+
   return (
     <>
-      <CreateForm />
-      <MenuList menuList={trainingMenuList} />
+      <CreateForm
+        addTrainingMenu={(trainingMenu) => addTrainingMenu(trainingMenu)}
+      />
+      <MenuList
+        trainingMenuList={trainingMenuList}
+        onClickDeleteButton={(id) => onClickDeleteButton(id)}
+      />
     </>
   )
 }
 
-export default Menu
+export default MenuPage
