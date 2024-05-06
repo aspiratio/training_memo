@@ -16,13 +16,21 @@ paths:
       operationId: get_daily_record
       responses:
         "200":
-          description: A success_response
+          description: A successful response
           schema:
-            $ref: "#/definitions/get_success_response"
-        "400":
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 200
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/get_daily_record_response_data"
+        "404":
           description: The request body invalid or missing.
     post:
-      description: Create new daily records
+      description: Create or update daily record
       operationId: post_daily_record
       parameters:
         - in: body
@@ -34,19 +42,51 @@ paths:
         "200":
           description: A successful response
           schema:
-            $ref: "#/definitions/post_success_response"
-        "400":
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 200
+              id:
+                type: string
+        "404":
           description: The request body invalid or missing.
+    delete:
+      description: Delete daily record
+      operationId: delete_daily_record
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: string
+          description: Document id of Firestore
+      responses:
+        "200":
+          description: A successful response
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 200
   "/menu":
     get:
       description: Get menu
       operationId: get_menu
       responses:
         "200":
-          description: A success_response
+          description: A successful response
           schema:
-            $ref: "#/definitions/get_success_response"
-        "400":
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 200
+              data:
+                type: array
+                items:
+                  $ref: "#/definitions/get_menu_response_data"
+        "404":
           description: The request body invalid or missing.
     post:
       description: Create or update training menu
@@ -61,24 +101,66 @@ paths:
         "200":
           description: A successful response
           schema:
-            $ref: "#/definitions/post_success_response"
-        "400":
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 200
+              id:
+                type: string
+        "404":
           description: The request body invalid or missing.
+    delete:
+      description: Delete training menu
+      operationId: delete_menu
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: string
+          description: Document id of Firestore
+      responses:
+        "200":
+          description: A successful response
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 200
 definitions:
-  get_success_response:
+  get_daily_record_response_data:
     type: object
     properties:
-      status:
+      id:
+        type: string
+      count:
         type: integer
-        example: 200
-      data:
-        type: array
-  post_success_response:
+      menu_id:
+        type: string
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+  get_menu_response_data:
     type: object
     properties:
-      status:
+      id:
+        type: string
+      name:
+        type: string
+      unit:
+        type: string
+      weekly_quota:
         type: integer
-        example: 200
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
   daily_record:
     type: object
     properties:
