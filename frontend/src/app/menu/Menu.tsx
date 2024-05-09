@@ -9,6 +9,7 @@ import {
   XCircleIcon,
 } from "@heroicons/react/20/solid"
 import { setTrainingMenuList } from "@/utils/request"
+import MenuForm from "@/components/MenuForm"
 
 type Props = {
   children: TrainingMenu
@@ -18,7 +19,6 @@ type Props = {
 const Menu = ({ children, onClickDeleteButton }: Props) => {
   const menu = children.name
   const unit = children.unit
-  const id = children.id
   const [quota, setQuota] = useState<number>(children.weekly_quota)
   const [isReadOnly, setIsReadOnly] = useState<boolean>(true)
 
@@ -45,15 +45,13 @@ const Menu = ({ children, onClickDeleteButton }: Props) => {
 
   return (
     <form className="py-4 space-x-2 text-center">
-      <Input className="w-2/6" defaultValue={menu} readOnly={true} />
-      <Input
-        className="w-1/6"
-        defaultValue={String(quota)}
-        readOnly={isReadOnly}
-        type="number"
-        onChange={(e) => handleChange(e, setQuota)}
+      <MenuForm
+        menu={menu}
+        count={quota}
+        unit={unit}
+        isEditCount={isReadOnly}
+        onChangeCount={(e) => handleChange(e, setQuota)}
       />
-      <Input className="w-1/6" defaultValue={unit} readOnly={true} />
       {isReadOnly ? (
         <>
           <PencilIcon
