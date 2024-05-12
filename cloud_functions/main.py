@@ -1,7 +1,6 @@
 import os
 from datetime import datetime, timedelta, timezone
 from logging import DEBUG, Formatter, StreamHandler, getLogger
-from urllib import response
 from google.cloud import firestore
 from google.cloud.firestore_v1.base_query import FieldFilter
 from dotenv import load_dotenv
