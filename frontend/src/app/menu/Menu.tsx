@@ -1,5 +1,4 @@
 "use client"
-import Input from "@/components/commons/Input"
 import { Dispatch, SetStateAction, useState } from "react"
 import { TrainingMenu, onChangeEvent } from "@/types/global"
 import {

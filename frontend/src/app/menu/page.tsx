@@ -1,14 +1,12 @@
 "use client"
-import { TrainingMenu } from "@/types/global"
+import { TrainingMenu, TrainingMenuList } from "@/types/global"
 import CreateForm from "./CreateForm"
 import MenuList from "./MenuList"
 import { useEffect, useState } from "react"
 import { getTrainingMenuList, deleteTrainingMenu } from "@/utils/request"
 
 const MenuPage = () => {
-  const [trainingMenuList, setTrainingMenuList] = useState<Array<TrainingMenu>>(
-    []
-  )
+  const [trainingMenuList, setTrainingMenuList] = useState<TrainingMenuList>([])
   const addTrainingMenu = (trainingMenu: TrainingMenu) => {
     setTrainingMenuList([...trainingMenuList, trainingMenu])
   }

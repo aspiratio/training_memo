@@ -1,4 +1,4 @@
-import { TrainingMenu, TrainingMenuList } from "@/types/global"
+import { TrainingMenuList } from "@/types/global"
 import Menu from "./Menu"
 
 type Props = {
