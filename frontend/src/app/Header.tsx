@@ -9,8 +9,11 @@ const Header = () => {
   return (
     <header className="py-5 px-10 border-b">
       <nav className="text-2xl font-extrabold  flex justify-between items-center">
-        <Link href="/" className={pathname === "/" ? locationColor : undefined}>
-          Top
+        <Link
+          href="/record"
+          className={pathname === "/record" ? locationColor : undefined}
+        >
+          Record
         </Link>
         <Link
           href="/menu"
@@ -19,10 +22,10 @@ const Header = () => {
           Menu
         </Link>
         <Link
-          href="/record"
-          className={pathname === "/record" ? locationColor : undefined}
+          href="/history"
+          className={pathname === "/history" ? locationColor : undefined}
         >
-          Record
+          History
         </Link>
       </nav>
     </header>
