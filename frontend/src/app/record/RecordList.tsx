@@ -1,8 +1,8 @@
 import MenuForm from "@/components/MenuForm"
-import { TrainingMenuList } from "@/types/global"
+import { TrainingMenu } from "@/types/global"
 
 type Props = {
-  trainingMenuList: TrainingMenuList
+  trainingMenuList: TrainingMenu[]
 }
 
 const RecordList = ({ trainingMenuList }: Props) => {

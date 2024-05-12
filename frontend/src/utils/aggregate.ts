@@ -2,9 +2,9 @@ import dayjs from "dayjs"
 import "dayjs/locale/ja"
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore"
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter"
-import { DailyRecordList } from "@/types/global"
+import { DailyRecord } from "@/types/global"
 
-export const sumDailyRecords = (dailyRecords: DailyRecordList) => {
+export const sumDailyRecords = (dailyRecords: DailyRecord[]) => {
   // 本日の日時を取得
   dayjs.locale("ja")
   dayjs.extend(isSameOrBefore)

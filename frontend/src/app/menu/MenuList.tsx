@@ -1,8 +1,8 @@
-import { TrainingMenuList } from "@/types/global"
+import { TrainingMenu } from "@/types/global"
 import Menu from "./Menu"
 
 type Props = {
-  trainingMenuList: TrainingMenuList
+  trainingMenuList: TrainingMenu[]
   onClickDeleteButton: (id: string) => void
 }
 

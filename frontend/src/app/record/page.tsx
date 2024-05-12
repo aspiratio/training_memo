@@ -1,12 +1,12 @@
 "use client"
-import { TrainingMenuList, WeeklyRecord } from "@/types/global"
+import { TrainingMenu, WeeklyRecord } from "@/types/global"
 import { getDailyRecordList, getTrainingMenuList } from "@/utils/request"
 import { useEffect, useState } from "react"
 import RecordList from "./RecordList"
 import { sumDailyRecords } from "@/utils/aggregate"
 
 const Record = () => {
-  const [trainingMenuList, setTrainingMenuList] = useState<TrainingMenuList>([])
+  const [trainingMenuList, setTrainingMenuList] = useState<TrainingMenu[]>([])
   const [weeklyRecordList, setWeeklyRecordList] = useState<WeeklyRecord[]>([])
 
   const onClickSaveButton = async (id: string) => {

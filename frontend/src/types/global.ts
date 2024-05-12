@@ -9,16 +9,12 @@ export type TrainingMenu = {
   id: string
 }
 
-export type TrainingMenuList = TrainingMenu[]
-
 export type DailyRecord = {
   count: number
   menu_id: string
   id: string
   created_at: Date
 }
-
-export type DailyRecordList = DailyRecord[]
 
 export type WeeklyRecord = {
   menuId: string
