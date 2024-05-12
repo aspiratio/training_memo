@@ -1,12 +1,17 @@
+import { TrainingMenu } from "@/types/global"
 import dayjs from "dayjs"
 import "dayjs/locale/ja"
 
 const API_ENDPOINT = process.env.NEXT_PUBLIC_CLOUD_FUNCTIONS_URL
 dayjs.locale("ja")
 
-export const getTrainingMenuList = async () => {
+export const getTrainingMenuList = async (): Promise<TrainingMenu[]> => {
   const res = await fetch(`${API_ENDPOINT}/menu`, { cache: "no-store" })
-  const trainingMenuList = (await res.json()).data
+  const trainingMenuList = (await res.json()).data.map((menu: any) => ({
+    ...menu,
+    weeklyQuota: menu.weekly_quota, // weekly_quota をキャメルケースに変換して新しいプロパティにセット
+    weekly_quota: undefined, // 不要な旧プロパティを削除
+  }))
   return trainingMenuList
 }
 

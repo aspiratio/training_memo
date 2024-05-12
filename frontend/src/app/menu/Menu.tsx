@@ -18,7 +18,7 @@ type Props = {
 const Menu = ({ children, onClickDeleteButton }: Props) => {
   const menu = children.name
   const unit = children.unit
-  const [quota, setQuota] = useState<number>(children.weekly_quota)
+  const [quota, setQuota] = useState<number>(children.weeklyQuota)
   const [isReadOnly, setIsReadOnly] = useState<boolean>(true)
 
   const handleChange = (

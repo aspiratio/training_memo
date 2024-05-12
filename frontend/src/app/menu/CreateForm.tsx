@@ -28,7 +28,7 @@ const CreateForm = ({ addTrainingMenu }: Props) => {
       const id = await setTrainingMenuList(menu, Number(quota), unit) // APIリクエスト
       addTrainingMenu({
         name: menu,
-        weekly_quota: Number(quota),
+        weeklyQuota: Number(quota),
         unit,
         id,
       }) // stateの更新

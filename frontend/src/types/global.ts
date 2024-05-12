@@ -4,7 +4,7 @@ export type onSubmitEvent = React.FormEvent<HTMLFormElement>
 
 export type TrainingMenu = {
   name: string
-  weekly_quota: number
+  weeklyQuota: number
   unit: string
   id: string
 }
