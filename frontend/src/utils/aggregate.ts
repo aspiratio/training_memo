@@ -20,20 +20,20 @@ export const sumDailyRecords = (dailyRecords: DailyRecord[]) => {
   // 開始日から次の日曜日を終了日とする
   const endOfWeek = startOfWeek.endOf("week").add(1, "day")
 
-  // menu_id ごとに count の合計を集計するオブジェクト
-  const aggregatedData: { [menu_id: string]: number } = {}
+  // menuId ごとに count の合計を集計するオブジェクト
+  const aggregatedData: { [menuId: string]: number } = {}
 
-  // 期間内の menu_id ごとの count の合計値を集計する
+  // 期間内の menuId ごとの count の合計値を集計する
   for (const record of dailyRecords) {
-    const created_at = dayjs(record.created_at)
+    const createdAt = dayjs(record.createdAt)
     if (
-      created_at.isSameOrAfter(startOfWeek) &&
-      created_at.isSameOrBefore(endOfWeek)
+      createdAt.isSameOrAfter(startOfWeek) &&
+      createdAt.isSameOrBefore(endOfWeek)
     ) {
-      if (aggregatedData[record.menu_id]) {
-        aggregatedData[record.menu_id] += record.count
+      if (aggregatedData[record.menuId]) {
+        aggregatedData[record.menuId] += record.count
       } else {
-        aggregatedData[record.menu_id] = record.count
+        aggregatedData[record.menuId] = record.count
       }
     }
   }

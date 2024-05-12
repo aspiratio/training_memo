@@ -11,9 +11,9 @@ export type TrainingMenu = {
 
 export type DailyRecord = {
   count: number
-  menu_id: string
+  menuId: string
   id: string
-  created_at: Date
+  createdAt: Date
 }
 
 export type WeeklyRecord = {

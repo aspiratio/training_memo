@@ -1,4 +1,4 @@
-import { TrainingMenu } from "@/types/global"
+import { DailyRecord, TrainingMenu } from "@/types/global"
 import dayjs from "dayjs"
 import "dayjs/locale/ja"
 
@@ -15,7 +15,7 @@ export const getTrainingMenuList = async (): Promise<TrainingMenu[]> => {
   return trainingMenuList
 }
 
-export const getDailyRecordList = async () => {
+export const getDailyRecordList = async (): Promise<DailyRecord[]> => {
   type responseDailyRecord = {
     count: number
     menu_id: string
@@ -29,7 +29,10 @@ export const getDailyRecordList = async () => {
   const convertedDailyRecordList = dailyRecordList.map(
     ({ updated_at, ...rest }: responseDailyRecord) => ({
       ...rest,
-      created_at: dayjs(rest.created_at).toDate(),
+      menuId: rest.menu_id,
+      createdAt: dayjs(rest.created_at).toDate(),
+      menu_id: undefined,
+      created_at: undefined,
     })
   )
 
