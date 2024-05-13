@@ -2,9 +2,9 @@ import dayjs from "dayjs"
 import "dayjs/locale/ja"
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore"
 import isSameOrAfter from "dayjs/plugin/isSameOrAfter"
-import { DailyRecord } from "@/types/global"
+import { DailyRecord, TrainingMenu, WeeklyRecord } from "@/types/global"
 
-export const sumDailyRecords = (dailyRecords: DailyRecord[]) => {
+export const sumGroupByMenuId = (records: DailyRecord[]) => {
   // 本日の日時を取得
   dayjs.locale("ja")
   dayjs.extend(isSameOrBefore)
@@ -24,7 +24,7 @@ export const sumDailyRecords = (dailyRecords: DailyRecord[]) => {
   const aggregatedData: { [menuId: string]: number } = {}
 
   // 期間内の menuId ごとの count の合計値を集計する
-  for (const record of dailyRecords) {
+  for (const record of records) {
     const createdAt = dayjs(record.createdAt)
     if (
       createdAt.isSameOrAfter(startOfWeek) &&
@@ -47,4 +47,28 @@ export const sumDailyRecords = (dailyRecords: DailyRecord[]) => {
   }))
 
   return result
+}
+
+export const calcWeeklyRecords = (
+  dailyRecords: DailyRecord[],
+  menus: TrainingMenu[]
+): WeeklyRecord[] => {
+  const weeklyRecords = sumGroupByMenuId(dailyRecords)
+  const mergedMenus: WeeklyRecord[] = []
+  // メニューごとにループ
+  menus.forEach((menu) => {
+    // 対応するWeeklyRecordを検索
+    const record = weeklyRecords.find((r) => r.menuId === menu.id)
+
+    const mergedMenu: WeeklyRecord = {
+      menuId: menu.id,
+      menuName: menu.name,
+      totalCount: record ? record.totalCount : 0,
+      unit: menu.unit,
+    }
+
+    mergedMenus.push(mergedMenu)
+  })
+
+  return mergedMenus
 }

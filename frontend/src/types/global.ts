@@ -18,5 +18,7 @@ export type DailyRecord = {
 
 export type WeeklyRecord = {
   menuId: string
+  menuName: string
   totalCount: number
+  unit: string
 }

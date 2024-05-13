@@ -3,11 +3,10 @@ import { TrainingMenu, WeeklyRecord } from "@/types/global"
 import { getDailyRecordList, getTrainingMenuList } from "@/utils/request"
 import { useEffect, useState } from "react"
 import RecordList from "./RecordList"
-import { sumDailyRecords } from "@/utils/aggregate"
+import { calcWeeklyRecords } from "@/utils/aggregate"
 
 const Record = () => {
-  const [trainingMenuList, setTrainingMenuList] = useState<TrainingMenu[]>([])
-  const [weeklyRecordList, setWeeklyRecordList] = useState<WeeklyRecord[]>([])
+  const [weeklyRecords, setWeeklyRecords] = useState<WeeklyRecord[]>([])
 
   const onClickSaveButton = async (id: string) => {
     try {
@@ -20,16 +19,15 @@ const Record = () => {
   useEffect(() => {
     const getData = async () => {
       const menuList = await getTrainingMenuList()
-      setTrainingMenuList(menuList)
-      const recordList = await getDailyRecordList()
-      setWeeklyRecordList(sumDailyRecords(recordList))
+      const dailyRecordList = await getDailyRecordList()
+      setWeeklyRecords(calcWeeklyRecords(dailyRecordList, menuList))
     }
     getData()
   }, [])
 
   return (
     <>
-      <RecordList trainingMenuList={trainingMenuList} />
+      <RecordList weeklyRecords={weeklyRecords} />
     </>
   )
 }

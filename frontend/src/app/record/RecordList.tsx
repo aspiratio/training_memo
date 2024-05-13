@@ -1,20 +1,20 @@
 import MenuForm from "@/components/MenuForm"
-import { TrainingMenu } from "@/types/global"
+import { TrainingMenu, WeeklyRecord } from "@/types/global"
 
 type Props = {
-  trainingMenuList: TrainingMenu[]
+  weeklyRecords: WeeklyRecord[]
 }
 
-const RecordList = ({ trainingMenuList }: Props) => {
+const RecordList = ({ weeklyRecords }: Props) => {
   return (
     <>
-      {trainingMenuList.map((menu) => {
+      {weeklyRecords.map((record) => {
         return (
-          <div key={menu.id}>
+          <div key={record.menuId}>
             <MenuForm
-              menu={menu.name}
-              count={10}
-              unit={menu.unit}
+              menu={record.menuName}
+              count={record.totalCount}
+              unit={record.unit}
               isEditCount={false}
             />
           </div>
