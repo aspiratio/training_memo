@@ -10,7 +10,6 @@ export const getTrainingMenuList = async (): Promise<TrainingMenu[]> => {
   const trainingMenuList = (await res.json()).data.map((menu: any) => ({
     ...menu,
     weeklyQuota: menu.weekly_quota, // weekly_quota をキャメルケースに変換して新しいプロパティにセット
-    weekly_quota: undefined, // 不要な旧プロパティを削除
   }))
   return trainingMenuList
 }
@@ -31,8 +30,6 @@ export const getDailyRecordList = async (): Promise<DailyRecord[]> => {
       ...rest,
       menuId: rest.menu_id,
       createdAt: dayjs(rest.created_at).toDate(),
-      menu_id: undefined,
-      created_at: undefined,
     })
   )
 
