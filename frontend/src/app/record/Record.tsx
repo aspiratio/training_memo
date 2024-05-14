@@ -1,25 +1,24 @@
 "use client"
-import { Dispatch, SetStateAction, useState } from "react"
-import { TrainingMenu, onChangeEvent } from "@/types/global"
+
+import MenuForm from "@/components/MenuForm"
+import { WeeklyRecord, onChangeEvent } from "@/types/global"
 import {
   CheckCircleIcon,
-  PencilIcon,
-  TrashIcon,
+  PlusCircleIcon,
   XCircleIcon,
 } from "@heroicons/react/20/solid"
-import { setTrainingMenuList } from "@/utils/request"
-import MenuForm from "@/components/MenuForm"
+import { Dispatch, SetStateAction, useState, useRef } from "react"
 
 type Props = {
-  children: TrainingMenu
-  onClickDeleteButton: () => void
+  children: WeeklyRecord
 }
 
-const Menu = ({ children, onClickDeleteButton }: Props) => {
-  const menu = children.name
+const Record = ({ children }: Props) => {
+  const menu = children.menuName
   const unit = children.unit
-  const [quota, setQuota] = useState<number>(children.weeklyQuota)
+  const [count, setCount] = useState<number>(children.totalCount)
   const [isReadOnly, setIsReadOnly] = useState<boolean>(true)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   const handleChange = (
     e: onChangeEvent,
@@ -29,9 +28,8 @@ const Menu = ({ children, onClickDeleteButton }: Props) => {
   }
 
   const updateMenu = async () => {
-    // TODO: API側にupdateメソッドを追加したら書き換える
     try {
-      await setTrainingMenuList(menu, quota, unit)
+      // daily_recordの登録処理
       changeReadOnly()
     } catch {
       alert("更新に失敗しました")
@@ -40,26 +38,26 @@ const Menu = ({ children, onClickDeleteButton }: Props) => {
 
   const changeReadOnly = () => {
     setIsReadOnly(!isReadOnly)
+    if (inputRef.current) {
+      inputRef.current.focus()
+    }
   }
 
   return (
     <form className="py-4 space-x-2 text-center">
       <MenuForm
         menu={menu}
-        count={quota}
+        count={count}
         unit={unit}
         isReadOnly={isReadOnly}
-        onChangeCount={(e) => handleChange(e, setQuota)}
+        ref={inputRef}
+        onChangeCount={(e) => handleChange(e, setCount)}
       />
       {isReadOnly ? (
         <>
-          <PencilIcon
+          <PlusCircleIcon
             onClick={changeReadOnly}
             className="h-8 w-8 inline text-yellow-100"
-          />
-          <TrashIcon
-            onClick={onClickDeleteButton}
-            className="h-8 w-8 inline text-red-400"
           />
         </>
       ) : (
@@ -80,4 +78,4 @@ const Menu = ({ children, onClickDeleteButton }: Props) => {
   )
 }
 
-export default Menu
+export default Record

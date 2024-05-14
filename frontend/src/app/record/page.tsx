@@ -5,7 +5,7 @@ import { useEffect, useState } from "react"
 import RecordList from "./RecordList"
 import { calcWeeklyRecords } from "@/utils/aggregate"
 
-const Record = () => {
+const RecordPage = () => {
   const [weeklyRecords, setWeeklyRecords] = useState<WeeklyRecord[]>([])
 
   const onClickSaveButton = async (id: string) => {
@@ -32,4 +32,4 @@ const Record = () => {
   )
 }
 
-export default Record
+export default RecordPage
