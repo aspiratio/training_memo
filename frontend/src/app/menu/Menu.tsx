@@ -7,7 +7,7 @@ import {
   TrashIcon,
   XCircleIcon,
 } from "@heroicons/react/20/solid"
-import { setTrainingMenuList } from "@/utils/request"
+import { setTrainingMenu } from "@/utils/request"
 import MenuForm from "@/components/MenuForm"
 
 type Props = {
@@ -31,7 +31,7 @@ const Menu = ({ children, onClickDeleteButton }: Props) => {
   const updateMenu = async () => {
     // TODO: API側にupdateメソッドを追加したら書き換える
     try {
-      await setTrainingMenuList(menu, quota, unit)
+      await setTrainingMenu(menu, quota, unit)
       changeReadOnly()
     } catch {
       alert("更新に失敗しました")

@@ -2,6 +2,7 @@
 
 import MenuForm from "@/components/MenuForm"
 import { WeeklyRecord, onChangeEvent } from "@/types/global"
+import { setDailyRecord } from "@/utils/request"
 import {
   CheckCircleIcon,
   PlusCircleIcon,
@@ -27,12 +28,12 @@ const Record = ({ children }: Props) => {
     setState(e.target.value)
   }
 
-  const updateMenu = async () => {
+  const addDailyRecord = async () => {
     try {
-      // daily_recordの登録処理
-      changeReadOnly()
+      await setDailyRecord(menu, count)
+      setIsReadOnly(true)
     } catch {
-      alert("更新に失敗しました")
+      alert("削除に失敗しました")
     }
   }
 
@@ -64,7 +65,7 @@ const Record = ({ children }: Props) => {
         <>
           <CheckCircleIcon
             onClick={() => {
-              updateMenu()
+              addDailyRecord()
             }}
             className="h-8 w-8 inline text-yellow-100"
           />

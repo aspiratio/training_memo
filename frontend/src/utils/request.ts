@@ -36,7 +36,21 @@ export const getDailyRecordList = async (): Promise<DailyRecord[]> => {
   return convertedDailyRecordList
 }
 
-export const setTrainingMenuList = async (
+export const setDailyRecord = async (menu: string, count: number) => {
+  await fetch(`${API_ENDPOINT}/daily_record`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      menu,
+      count,
+    }),
+    cache: "no-store",
+  })
+}
+
+export const setTrainingMenu = async (
   menu: string,
   quota: number,
   unit: string

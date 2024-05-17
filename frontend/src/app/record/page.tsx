@@ -1,5 +1,5 @@
 "use client"
-import { TrainingMenu, WeeklyRecord } from "@/types/global"
+import { WeeklyRecord } from "@/types/global"
 import { getDailyRecordList, getTrainingMenuList } from "@/utils/request"
 import { useEffect, useState } from "react"
 import RecordList from "./RecordList"
@@ -7,14 +7,6 @@ import { calcWeeklyRecords } from "@/utils/aggregate"
 
 const RecordPage = () => {
   const [weeklyRecords, setWeeklyRecords] = useState<WeeklyRecord[]>([])
-
-  const onClickSaveButton = async (id: string) => {
-    try {
-      // daily_recordに記録する処理
-    } catch {
-      alert("削除に失敗しました")
-    }
-  }
 
   useEffect(() => {
     const getData = async () => {
