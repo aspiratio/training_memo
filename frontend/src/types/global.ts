@@ -4,9 +4,21 @@ export type onSubmitEvent = React.FormEvent<HTMLFormElement>
 
 export type TrainingMenu = {
   name: string
-  weekly_quota: number
+  weeklyQuota: number
   unit: string
   id: string
 }
 
-export type TrainingMenuList = TrainingMenu[]
+export type DailyRecord = {
+  count: number
+  menuId: string
+  id: string
+  createdAt: Date
+}
+
+export type WeeklyRecord = {
+  menuId: string
+  menuName: string
+  totalCount: number
+  unit: string
+}

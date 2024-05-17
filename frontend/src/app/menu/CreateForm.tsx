@@ -3,7 +3,7 @@ import Input from "@/components/commons/Input"
 import PrimaryButton from "@/components/commons/PrimaryButton"
 import { Dispatch, SetStateAction, useState } from "react"
 import { TrainingMenu, onChangeEvent, onSubmitEvent } from "@/types/global"
-import { setTrainingMenuList } from "@/utils/request"
+import { setTrainingMenu } from "@/utils/request"
 
 type Props = {
   addTrainingMenu: (trainingMenu: TrainingMenu) => void
@@ -25,10 +25,10 @@ const CreateForm = ({ addTrainingMenu }: Props) => {
     console.log(menu, quota, unit)
     try {
       e.preventDefault()
-      const id = await setTrainingMenuList(menu, Number(quota), unit) // APIリクエスト
+      const id = await setTrainingMenu(menu, Number(quota), unit) // APIリクエスト
       addTrainingMenu({
         name: menu,
-        weekly_quota: Number(quota),
+        weeklyQuota: Number(quota),
         unit,
         id,
       }) // stateの更新

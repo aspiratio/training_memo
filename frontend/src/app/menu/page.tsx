@@ -6,9 +6,7 @@ import { useEffect, useState } from "react"
 import { getTrainingMenuList, deleteTrainingMenu } from "@/utils/request"
 
 const MenuPage = () => {
-  const [trainingMenuList, setTrainingMenuList] = useState<Array<TrainingMenu>>(
-    []
-  )
+  const [trainingMenuList, setTrainingMenuList] = useState<TrainingMenu[]>([])
   const addTrainingMenu = (trainingMenu: TrainingMenu) => {
     setTrainingMenuList([...trainingMenuList, trainingMenu])
   }
