@@ -1,10 +1,22 @@
 "use client"
+import { monitorAuthState } from "@/utils/auth"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
+import { useEffect } from "react"
 
 const Header = () => {
   const pathname = usePathname()
+  const router = useRouter()
   const locationColor = "text-yellow-100"
+
+  useEffect(() => {
+    // ユーザーがログインしているかどうかを監視する
+    const unsubscribe = monitorAuthState((user) => {
+      !user && router.push("/")
+    })
+    // コンポーネントがアンマウントされるときにリスナーをクリーンアップ
+    return () => unsubscribe()
+  }, [router])
 
   return (
     <header className="py-5 px-10 border-b">
