@@ -30,9 +30,11 @@ root_doc = db.collection(root_collection_name).document(root_doc_id)
 
 # TODO: Flaskに書き換える
 def main(request):
-    # NOTE: 開発時のサーバーを起動するため、CORSの設定を行う。本番環境はAPIGateWay経由でトリガーされるため不要なはず
     headers = {
-        "Access-Control-Allow-Origin": "http://localhost:3000",
+        "Access-Control-Allow-Origin": [
+            "http://localhost:3000",
+            "https://training-memo.vercel.app/",
+        ],
         "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type",
         "Access-Control-Max-Age": "3600",
