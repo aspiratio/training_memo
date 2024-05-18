@@ -9,6 +9,9 @@ produces:
   - application/json
 x-google-backend:
   address: https://asia-northeast1-earnest-math-313901.cloudfunctions.net/training_memo
+x-google-endpoints:
+  - name: asia-northeast1-earnest-math-313901.cloudfunctions.net
+    allowCors: true
 paths:
   "/daily_record":
     get:
