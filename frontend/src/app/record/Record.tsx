@@ -41,6 +41,13 @@ const Record = ({ children }: Props) => {
     setIsReadOnly(!isReadOnly)
     if (inputRef.current) {
       inputRef.current.focus()
+      if (inputRef.current) {
+        const touchEvent = new Event("touchstart", {
+          bubbles: true,
+          cancelable: true,
+        })
+        inputRef.current.dispatchEvent(touchEvent)
+      }
     }
   }
 
