@@ -30,15 +30,18 @@ root_doc = db.collection(root_collection_name).document(root_doc_id)
 
 # TODO: Flaskに書き換える
 def main(request):
-    headers = {
-        "Access-Control-Allow-Origin": [
-            "http://localhost:3000",
-            "https://training-memo.vercel.app/",
-        ],
-        "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type",
-        "Access-Control-Max-Age": "3600",
-    }
+    allowed_origins = ["http://localhost:3000", "https://training-memo.vercel.app"]
+    origin = request.headers.get("Origin", "")
+
+    if origin in allowed_origins:
+        headers = {
+            "Access-Control-Allow-Origin": origin,
+            "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+            "Access-Control-Max-Age": "3600",
+        }
+    else:
+        headers = {}
     if request.method == "GET":
         message = handle_get(request)
     elif request.method == "POST":
