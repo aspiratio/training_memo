@@ -15,8 +15,8 @@ x-google-endpoints:
 paths:
   "/daily_record":
     options:
-      summary: "CORS support"
       description: "Enable CORS by returning the correct headers"
+      operationId: "CORS_support"
       responses:
         "204":
           description: "No content"
