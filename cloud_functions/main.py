@@ -39,10 +39,13 @@ def main(request):
         "Access-Control-Max-Age": "3600",
     }
 
+    print("メソッド", request.method)
+
     if origin in allowed_origins:
         headers["Access-Control-Allow-Origin"] = origin
 
     if request.method == "OPTIONS":
+        print("OPTIONS")
         return ("", 204, headers)
 
     if request.method == "GET":
