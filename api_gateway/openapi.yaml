@@ -16,7 +16,7 @@ paths:
   "/daily_record":
     options:
       description: "Enable CORS by returning the correct headers"
-      operationId: "CORS_support"
+      operationId: "CORS_support_daily_record"
       responses:
         "204":
           description: "No content"
@@ -89,6 +89,22 @@ paths:
                 type: integer
                 example: 200
   "/menu":
+    options:
+      description: "Enable CORS by returning the correct headers"
+      operationId: "CORS_support_menu"
+      responses:
+        "204":
+          description: "No content"
+          headers:
+            Access-Control-Allow-Origin:
+              type: string
+              description: "CORS origin"
+            Access-Control-Allow-Methods:
+              type: string
+              description: "CORS methods"
+            Access-Control-Allow-Headers:
+              type: string
+              description: "CORS headers"
     get:
       description: Get menu
       operationId: get_menu
