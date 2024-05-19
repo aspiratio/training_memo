@@ -33,25 +33,28 @@ def main(request):
     allowed_origins = ["http://localhost:3000", "https://training-memo.vercel.app"]
     origin = request.headers.get("Origin", "")
 
+    headers = {
+        "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Max-Age": "3600",
+    }
+
     if origin in allowed_origins:
-        headers = {
-            "Access-Control-Allow-Origin": origin,
-            "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
-            "Access-Control-Allow-Headers": "Content-Type",
-            "Access-Control-Max-Age": "3600",
-        }
-    else:
-        headers = {}
+        headers["Access-Control-Allow-Origin"] = origin
+
+    if request.method == "OPTIONS":
+        return ("", 204, headers)
+
     if request.method == "GET":
         message = handle_get(request)
     elif request.method == "POST":
         message = handle_post(request)
     elif request.method == "DELETE":
         message = handle_delete(request)
-    elif request.method == "OPTIONS":
-        return ("", 204, headers)
+    else:
+        message = {"status": 405, "message": "Method Not Allowed"}
 
-    return (message, headers)
+    return (message, 200, headers)
 
 
 def handle_get(request):
