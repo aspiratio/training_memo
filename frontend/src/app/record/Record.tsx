@@ -18,18 +18,22 @@ const Record = ({ children }: Props) => {
   const menu = children.menuName
   const unit = children.unit
   const [count, setCount] = useState<number>(children.totalCount)
+  const [addCount, setAddCount] = useState<number>(0)
   const [isReadOnly, setIsReadOnly] = useState<boolean>(true)
 
   const handleChange = (
     e: onChangeEvent,
     setState: Dispatch<SetStateAction<any>>
   ) => {
-    setState(e.target.value)
+    setState(Number(e.target.value))
   }
 
   const addDailyRecord = async () => {
     try {
-      await setDailyRecord(menu, Number(count))
+      if (addCount) {
+        await setDailyRecord(menu, addCount)
+        setCount(count + addCount)
+      }
       setIsReadOnly(true)
     } catch {
       alert("記録に失敗しました")
@@ -44,10 +48,12 @@ const Record = ({ children }: Props) => {
     <form className="py-4 space-x-2 text-center">
       <MenuForm
         menu={menu}
-        count={count}
+        count={isReadOnly ? count : addCount}
         unit={unit}
         isReadOnly={isReadOnly}
-        onChangeCount={(e) => handleChange(e, setCount)}
+        onChangeCount={(e) =>
+          handleChange(e, isReadOnly ? setCount : setAddCount)
+        }
       />
       {isReadOnly ? (
         <>
@@ -59,9 +65,7 @@ const Record = ({ children }: Props) => {
       ) : (
         <>
           <CheckCircleIcon
-            onClick={() => {
-              addDailyRecord()
-            }}
+            onClick={addDailyRecord}
             className="h-8 w-8 inline text-yellow-100"
           />
           <XCircleIcon
