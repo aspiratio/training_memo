@@ -8,7 +8,7 @@ import {
   PlusCircleIcon,
   XCircleIcon,
 } from "@heroicons/react/20/solid"
-import { Dispatch, SetStateAction, useState, useRef } from "react"
+import { Dispatch, SetStateAction, useState } from "react"
 
 type Props = {
   children: WeeklyRecord
@@ -19,7 +19,6 @@ const Record = ({ children }: Props) => {
   const unit = children.unit
   const [count, setCount] = useState<number>(children.totalCount)
   const [isReadOnly, setIsReadOnly] = useState<boolean>(true)
-  const inputRef = useRef<HTMLInputElement>(null)
 
   const handleChange = (
     e: onChangeEvent,
@@ -30,25 +29,15 @@ const Record = ({ children }: Props) => {
 
   const addDailyRecord = async () => {
     try {
-      await setDailyRecord(menu, count)
+      await setDailyRecord(menu, Number(count))
       setIsReadOnly(true)
     } catch {
-      alert("削除に失敗しました")
+      alert("記録に失敗しました")
     }
   }
 
   const changeReadOnly = () => {
     setIsReadOnly(!isReadOnly)
-    if (inputRef.current) {
-      inputRef.current.focus()
-      if (inputRef.current) {
-        const touchEvent = new Event("touchstart", {
-          bubbles: true,
-          cancelable: true,
-        })
-        inputRef.current.dispatchEvent(touchEvent)
-      }
-    }
   }
 
   return (
@@ -58,7 +47,6 @@ const Record = ({ children }: Props) => {
         count={count}
         unit={unit}
         isReadOnly={isReadOnly}
-        ref={inputRef}
         onChangeCount={(e) => handleChange(e, setCount)}
       />
       {isReadOnly ? (
