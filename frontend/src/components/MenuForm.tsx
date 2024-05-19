@@ -3,7 +3,7 @@ import Input from "./commons/Input"
 
 type Props = {
   menu: string
-  count: number
+  count?: number
   unit: string
   isReadOnly: boolean
   onChangeCount?: (e: ChangeEvent<HTMLInputElement>) => void
@@ -17,7 +17,7 @@ const MenuForm = forwardRef<HTMLInputElement, Props>(
         <Input className="w-2/6" defaultValue={menu} readOnly={true} />
         <Input
           className="w-1/6"
-          defaultValue={String(count)}
+          value={String(count ? count : "")}
           readOnly={isReadOnly}
           ref={ref}
           type="number"

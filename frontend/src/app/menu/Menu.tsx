@@ -31,7 +31,7 @@ const Menu = ({ children, onClickDeleteButton }: Props) => {
   const updateMenu = async () => {
     // TODO: API側にupdateメソッドを追加したら書き換える
     try {
-      await setTrainingMenu(menu, quota, unit)
+      await setTrainingMenu(menu, Number(quota), unit)
       changeReadOnly()
     } catch {
       alert("更新に失敗しました")
