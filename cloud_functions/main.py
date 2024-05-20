@@ -1,5 +1,5 @@
 import os
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta, timezone, date
 from logging import DEBUG, Formatter, StreamHandler, getLogger
 from google.cloud import firestore
 from google.cloud.firestore_v1.base_query import FieldFilter
@@ -76,6 +76,12 @@ def handle_get(request):
         except Exception as e:
             logger.error(e, exc_info=True)
             return {"status": 500, "message": "取得に失敗しました"}
+    elif request_path == "/notify":
+        try:
+            response = notify_to_line()
+        except Exception as e:
+            logger.error(e, exc_info=True)
+            return {"status": 500, "message": "通知に失敗しました"}
     else:
         logger.info("無効なパスパラメータでリクエストされました")
         return {"status": 404}
@@ -221,13 +227,16 @@ def set_training_menu(request_body: dict):
 
 
 # Firestoreへのリクエスト
-def get_documents(collection_name: str, field: str = None, value: any = None):
+def get_documents(
+    collection_name: str, field: str = None, operator: str = None, value: any = None
+):
     """
     Firestoreから指定した検索条件に一致するドキュメントを取得する
 
     Parameters:
     - collection_name (str): コレクション名
     - field (str, optional): 検索に使うフィールド名
+    - operator (str, optional): 比較演算子
     - value (any, optional): 検索する値
 
     Returns:
@@ -238,7 +247,7 @@ def get_documents(collection_name: str, field: str = None, value: any = None):
     if field is None and value is None:
         docs = collection_ref.stream()
     else:
-        docs = collection_ref.where(filter=FieldFilter(field, "==", value)).stream()
+        docs = collection_ref.where(field, operator, value).stream()
     return docs
 
 
@@ -294,3 +303,26 @@ def docs_to_json(docs):
         doc_dict["id"] = doc.id  # ドキュメントIDを辞書に追加
         json_data.append(doc_dict)
     return json_data
+
+
+def notify_to_line():
+    # JST タイムゾーンの定義
+    JST = timezone(timedelta(hours=+9), "JST")
+
+    # 今日の日付を JST で取得
+    today = datetime.now(JST).date()
+
+    # 曜日を取得 (月曜日は0、日曜日は6)
+    today_weekday = today.weekday()
+
+    # 本日以前の最近月曜日を取得
+    offset_days = today_weekday  # 月曜日からの日数差
+    start_date = today - timedelta(days=offset_days)
+
+    # 開始日の JST タイムスタンプを取得
+    start_datetime = datetime.combine(start_date, datetime.min.time()).replace(
+        tzinfo=JST
+    )
+
+    weekly_docs = get_documents("daily_record", "created_at", ">=", start_datetime)
+    return docs_to_json(weekly_docs)
