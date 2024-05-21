@@ -2,7 +2,7 @@ import os
 from datetime import datetime, timedelta, timezone, date
 from logging import DEBUG, Formatter, StreamHandler, getLogger
 from google.cloud import firestore
-from google.cloud.firestore_v1.base_query import FieldFilter
+from google.cloud.firestore_v1 import aggregation
 from dotenv import load_dotenv
 
 # .env ファイルから環境変数をロード
@@ -305,7 +305,13 @@ def docs_to_json(docs):
     return json_data
 
 
-def notify_to_line():
+def get_weekly_progress():
+    """
+    その週の各メニューの進捗を集計する
+
+    Returns:
+    - weekly_data: 各メニューに、その週（月曜〜日曜）の合計回数をつけたJSON
+    """
     # JST タイムゾーンの定義
     JST = timezone(timedelta(hours=+9), "JST")
 
@@ -324,5 +330,26 @@ def notify_to_line():
         tzinfo=JST
     )
 
-    weekly_docs = get_documents("daily_record", "created_at", ">=", start_datetime)
-    return docs_to_json(weekly_docs)
+    # メニューとその週のカウントを紐づける
+    weekly_data = []
+    menu_docs = get_documents("menu")
+
+    for menu_doc in menu_docs:
+        menu_doc_dict = menu_doc.to_dict()
+        collection_ref = root_doc.collection("daily_record")
+        query = collection_ref.where("created_at", ">=", start_datetime).where(
+            "menu_id", "==", menu_doc.id
+        )
+        aggregate_query = aggregation.AggregationQuery(query)
+        aggregate_query.sum("count", alias="sum")
+        results = (
+            aggregate_query.get()
+        )  # このような要素1個の配列が取れる [<Aggregation alias=sum, value=5771, readtime=2024-05-21 12:11:57.730969+00:00>]
+        menu_doc_dict["weekly_count"] = results[0][0].value
+        weekly_data.append(menu_doc_dict)
+
+    return weekly_data
+
+
+def notify_to_line():
+    print(get_weekly_progress())
