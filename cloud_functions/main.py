@@ -1,8 +1,11 @@
 import os
-from datetime import datetime, timedelta, timezone
+import json
+import requests
+from datetime import datetime, timedelta, timezone, date
 from logging import DEBUG, Formatter, StreamHandler, getLogger
 from google.cloud import firestore
 from google.cloud.firestore_v1.base_query import FieldFilter
+from google.cloud.firestore_v1 import aggregation
 from dotenv import load_dotenv
 
 # .env ファイルから環境変数をロード
@@ -76,6 +79,12 @@ def handle_get(request):
         except Exception as e:
             logger.error(e, exc_info=True)
             return {"status": 500, "message": "取得に失敗しました"}
+    elif request_path == "/notify":
+        try:
+            response = notify_to_line()
+        except Exception as e:
+            logger.error(e, exc_info=True)
+            return {"status": 500, "message": "通知に失敗しました"}
     else:
         logger.info("無効なパスパラメータでリクエストされました")
         return {"status": 404}
@@ -221,13 +230,16 @@ def set_training_menu(request_body: dict):
 
 
 # Firestoreへのリクエスト
-def get_documents(collection_name: str, field: str = None, value: any = None):
+def get_documents(
+    collection_name: str, field: str = None, operator: str = None, value: any = None
+):
     """
     Firestoreから指定した検索条件に一致するドキュメントを取得する
 
     Parameters:
     - collection_name (str): コレクション名
     - field (str, optional): 検索に使うフィールド名
+    - operator (str, optional): 比較演算子
     - value (any, optional): 検索する値
 
     Returns:
@@ -236,9 +248,13 @@ def get_documents(collection_name: str, field: str = None, value: any = None):
 
     collection_ref = root_doc.collection(collection_name)
     if field is None and value is None:
-        docs = collection_ref.stream()
+        docs = collection_ref.order_by("name").stream()
     else:
-        docs = collection_ref.where(filter=FieldFilter(field, "==", value)).stream()
+        docs = (
+            collection_ref.where(filter=FieldFilter(field, operator, value))
+            .order_by("name")
+            .stream()
+        )
     return docs
 
 
@@ -294,3 +310,104 @@ def docs_to_json(docs):
         doc_dict["id"] = doc.id  # ドキュメントIDを辞書に追加
         json_data.append(doc_dict)
     return json_data
+
+
+def get_weekly_progress():
+    """
+    その週の各メニューの進捗を集計する
+
+    Returns:
+    - weekly_data: 各メニューに、その週（月曜〜日曜）の合計回数と、順調かの判定をつけたJSON
+    """
+    # JST タイムゾーンの定義
+    JST = timezone(timedelta(hours=+9), "JST")
+
+    # 今日の日付を JST で取得
+    today = datetime.now(JST).date()
+
+    # 曜日を取得 (月曜日は0、日曜日は6)
+    today_weekday = today.weekday()
+
+    # 本日以前の最近月曜日を取得
+    offset_days = today_weekday  # 月曜日からの日数差
+    start_date = today - timedelta(days=offset_days)
+
+    # 開始日の JST タイムスタンプを取得
+    start_datetime = datetime.combine(start_date, datetime.min.time()).replace(
+        tzinfo=JST
+    )
+
+    # メニューとその週のカウントを紐づける
+    weekly_data = []
+    menu_docs = get_documents("menu")
+
+    for menu_doc in menu_docs:
+        menu_doc_dict = menu_doc.to_dict()
+        collection_ref = root_doc.collection("daily_record")
+        query = collection_ref.where(
+            filter=FieldFilter("created_at", ">=", start_datetime)
+        ).where(filter=FieldFilter("menu_id", "==", menu_doc.id))
+
+        aggregate_query = aggregation.AggregationQuery(query)
+        aggregate_query.sum("count", alias="sum")
+        results = (
+            aggregate_query.get()
+        )  # このような要素1個の配列が取れる [<Aggregation alias=sum, value=5771, readtime=2024-05-21 12:11:57.730969+00:00>]
+        weekly_count = results[0][0].value
+        menu_doc_dict["weekly_count"] = weekly_count
+        menu_doc_dict["progress"] = determineProgress(
+            weekly_count, menu_doc_dict["weekly_quota"], today_weekday
+        )
+
+        weekly_data.append(menu_doc_dict)
+
+    return weekly_data
+
+
+def determineProgress(count: int, quota: int, weekday: int):
+    progress_base = quota / (7 - weekday)
+    progress_rate = count / progress_base
+
+    if count >= quota:
+        result = "☀️"
+    elif progress_rate >= 1:
+        result = "⛅️"
+    elif progress_rate >= 0.6:
+        result = "☁️"
+    else:
+        result = "☔️"
+
+    return result
+
+
+def notify_to_line():
+    weekly_data = get_weekly_progress()
+
+    message = "残り回数\n"
+    for data in weekly_data:
+        remaining_count = max(
+            data["weekly_quota"] - data["weekly_count"], 0
+        )  # マイナスになる場合は0にする
+        comment = (
+            f"{data['progress']} {data['name']}: {remaining_count}{data['unit']}\n"
+        )
+        message += comment
+
+    request_data = {
+        "to": os.getenv("LINE_USER_ID"),
+        "messages": [{"type": "text", "text": message}],
+    }
+
+    # json形式に変換
+    request_body = json.dumps(request_data)
+
+    response = requests.post(
+        "https://api.line.me/v2/bot/message/push",
+        data=request_body,
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": os.getenv("LINE_API_BEARER_TOKEN"),
+        },
+    )
+
+    return response.text
