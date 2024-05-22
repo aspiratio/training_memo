@@ -369,23 +369,45 @@ def determineProgress(count: int, quota: int, weekday: int):
     progress_rate = count / progress_base
 
     if count >= quota:
-        result = "◎"
+        result = "☀️"
     elif progress_rate >= 1:
-        result = "○"
-    elif progress_rate >= 0.5:
-        result = "△"
+        result = "⛅️"
+    elif progress_rate >= 0.6:
+        result = "☁️"
     else:
-        result = "×"
+        result = "☔️"
 
     return result
 
 
 def notify_to_line():
     weekly_data = get_weekly_progress()
+
     message = "残り回数\n"
     for data in weekly_data:
-        remaining_count = data["weekly_quota"] - data["weekly_count"]
+        remaining_count = max(
+            data["weekly_quota"] - data["weekly_count"], 0
+        )  # マイナスになる場合は0にする
         comment = (
             f"{data['progress']} {data['name']}: {remaining_count}{data['unit']}\n"
         )
         message += comment
+
+    request_data = {
+        "to": os.getenv("LINE_USER_ID"),
+        "messages": [{"type": "text", "text": message}],
+    }
+
+    # json形式に変換
+    request_body = json.dumps(request_data)
+
+    response = requests.post(
+        "https://api.line.me/v2/bot/message/push",
+        data=request_body,
+        headers={
+            "Content-Type": "application/json",
+            "Authorization": os.getenv("LINE_API_BEARER_TOKEN"),
+        },
+    )
+
+    return response.text
