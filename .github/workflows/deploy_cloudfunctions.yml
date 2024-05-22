@@ -30,7 +30,7 @@ jobs:
           name: "training_memo" # 関数名
           entry_point: "main" # エントリポイント
           runtime: "python312" # 関数に使うランタイム
-          env_vars: FIRESTORE_ROOT_COLLECTION=training_memo, FIRESTORE_ROOT_DOCUMENT=v1 # 環境変数
+          env_vars: FIRESTORE_ROOT_COLLECTION=training_memo, FIRESTORE_ROOT_DOCUMENT=v1, LINE_USER_ID=${{ secrets.LINE_USER_ID }}, LINE_API_BEARER_TOKEN=${{ secrets.LINE_API_BEARER_TOKEN }} # 環境変数
           source_dir: "cloud_functions" # ルートディレクトリに main.py が無い時はこれでディレクトリを指定する
           timeout: 120 # 関数のタイムアウト時間
           max_instances: 10 # 最大インスタンス数
