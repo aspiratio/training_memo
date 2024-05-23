@@ -122,7 +122,6 @@ def handle_delete(request):
     purge_request_path = request_path.split(
         "/"
     )  # 例 [0]: "/", [1]: "daily_record", [2]: <id>
-    print(purge_request_path)
 
     # 無効なパスパラメータでリクエストされた場合
     if len(purge_request_path) != 3 or purge_request_path[1] not in [
@@ -248,11 +247,11 @@ def get_documents(
 
     collection_ref = root_doc.collection(collection_name)
     if field is None and value is None:
-        docs = collection_ref.order_by("name").stream()
+        docs = collection_ref.order_by("created_at").stream()
     else:
         docs = (
             collection_ref.where(filter=FieldFilter(field, operator, value))
-            .order_by("name")
+            .order_by("created_at")
             .stream()
         )
     return docs
