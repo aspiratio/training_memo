@@ -163,6 +163,21 @@ paths:
               status:
                 type: integer
                 example: 200
+
+  "/notify":
+    get:
+      description: Notify LINE Account
+      operationId: notify_line
+      responses:
+        "200":
+          description: A successful response
+          schema:
+            type: object
+            properties:
+              status:
+                type: integer
+                example: 200
+
 definitions:
   get_daily_record_response_data:
     type: object
