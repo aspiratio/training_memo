@@ -157,7 +157,7 @@ def add_daily_record(request_body: dict):
     Returns:
     - record_id: 追加したドキュメントのID
     """
-    menu_docs = list(get_documents("menu", "name", request_body["menu"]))
+    menu_docs = list(get_documents("menu", "name", "==", request_body["menu"]))
 
     if len(menu_docs) == 0:
         raise Exception("menu が登録されていません")
@@ -213,7 +213,7 @@ def set_training_menu(request_body: dict):
         "updated_at": firestore.SERVER_TIMESTAMP,
     }
 
-    menu_docs = list(get_documents("menu", "name", request_body["name"]))
+    menu_docs = list(get_documents("menu", "name", "==", request_body["name"]))
     if len(menu_docs) > 1:
         raise Exception("menu が複数登録されています")
 
