@@ -1,7 +1,8 @@
 import os
 import json
 import requests
-from datetime import datetime, timedelta, timezone, date
+from datetime import datetime, timedelta, timezone
+from decimal import Decimal, ROUND_HALF_UP
 from logging import DEBUG, Formatter, StreamHandler, getLogger
 from google.cloud import firestore
 from google.cloud.firestore_v1.base_query import FieldFilter
@@ -360,36 +361,47 @@ def get_weekly_progress():
 
         weekly_data.append(menu_doc_dict)
 
-    return weekly_data
+    return {"weekly_data": weekly_data, "remaining_day": 7 - today_weekday}
 
 
-def determineProgress(count: int, quota: int, weekday: int):
+def determineProgress(count: float, quota: float, weekday: int):
     progress_base = quota / (7 - weekday)
     progress_rate = count / progress_base
 
     if count >= quota:
-        result = "☀️"
+        result = "😄"
     elif progress_rate >= 1:
-        result = "⛅️"
+        result = "👍"
     elif progress_rate >= 0.6:
-        result = "☁️"
+        result = "😢"
     else:
-        result = "☔️"
+        result = "🔥"
 
     return result
 
 
+def round_half_up(number: float):
+    return Decimal(str(number)).quantize(Decimal("0.1"), ROUND_HALF_UP)
+
+
 def notify_to_line():
-    weekly_data = get_weekly_progress()
+    weekly_progress = get_weekly_progress()
 
     message = "残り回数\n"
-    for data in weekly_data:
+    for data in weekly_progress["weekly_data"]:
         remaining_count = max(
             data["weekly_quota"] - data["weekly_count"], 0
         )  # マイナスになる場合は0にする
-        comment = (
-            f"{data['progress']} {data['name']}: {remaining_count}{data['unit']}\n"
+
+        remaining_count_per_day = round_half_up(
+            remaining_count / weekly_progress["remaining_day"]
         )
+
+        total = f"{data['progress']} {data['name']}: {remaining_count}{data['unit']}"  # 例：😄腕立て: 30回
+        per_day = f"{remaining_count_per_day}{data['unit']}/日"  # 例：20回/日
+
+        comment = f"{total}\n　{per_day}\n"
+
         message += comment
 
     request_data = {
