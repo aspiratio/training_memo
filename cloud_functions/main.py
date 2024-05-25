@@ -365,7 +365,7 @@ def get_weekly_progress():
 
 
 def determineProgress(count: float, quota: float, weekday: int):
-    progress_base = quota / (7 - weekday)
+    progress_base = (quota / 7) * (1 + weekday)
     progress_rate = count / progress_base
 
     if count >= quota:
